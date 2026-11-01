@@ -9,7 +9,7 @@
 #   --stove DIR    the stove folder (default: WORK/stove). The compiler goes in
 #                  DIR/prefix and the identity in DIR/stove.json. The compiler
 #                  keeps this path for its SDK, so build it where it will live:
-#                  on a Cradle machine, ~/AmigaChrome/stoves/os4.
+#                  on a Cradle machine, ~/AmiCradle/stoves/os4.
 #   --work DIR     sources, build trees and logs (default: ./work). Keep it off
 #                  /tmp where /tmp is RAM.
 #   --sdk FILE     Hyperion's AmigaOS 4.1 SDK archive (SDK_54.25.lha). Without
@@ -210,7 +210,7 @@ if ! done_step xgcc; then
     done
     rm -rf "$GCC_BUILD" && mkdir -p "$GCC_BUILD"
     logged gcc-configure sh -c "cd '$GCC_BUILD' && '$GCC_SRC/configure' --target=$TARGET --prefix='$PREFIX' \
-        --with-pkgversion='AmigaChrome os4-gcc16' --with-bugurl=https://github.com/DalsinAI/amigachrome-stoves/issues \
+        --with-pkgversion='AmiCradle os4-gcc16' --with-bugurl=https://github.com/DalsinAI/amigachrome-stoves/issues \
         --enable-languages=c,c++ --enable-threads=amigaos --enable-lto --disable-tls --with-dwarf2 \
         --disable-libstdcxx-pch --disable-c++tools --disable-nls --disable-werror"
     logged gcc-make-xgcc make -C "$GCC_BUILD" -j"$JOBS" all-gcc

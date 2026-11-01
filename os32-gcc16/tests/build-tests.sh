@@ -1,6 +1,6 @@
 #!/bin/sh
 # Build the os32-gcc16 qualification tests with the stove (STOVE, default
-# ~/AmigaChrome/stoves/os32-gcc16) into bin/. Copy bin/ and run-tests to an
+# ~/AmiCradle/stoves/os32-gcc16) into bin/. Copy bin/ and run-tests to an
 # instance (e.g. DH1:GCC16/), Execute run-tests there, copy results/ back and
 # run ./check-results.sh. OPENTLS points at an openamigatls checkout (t8, t9).
 #
@@ -13,7 +13,7 @@
 #   040f  -m68040 -m68881   with the FPU (hard float), as the browser stack builds
 set -u
 cd "$(dirname "$0")"
-STOVE=${STOVE:-"$HOME/AmigaChrome/stoves/os32-gcc16"}
+STOVE=${STOVE:-"$HOME/AmiCradle/stoves/os32-gcc16"}
 OPENTLS=${OPENTLS:-"$HOME/openamigatls"}
 P="$STOVE/prefix/bin/m68k-amigaos-"
 SOFT="-specs=$(cd ../.. && pwd)/build/m68k-soft-m68040.specs"
@@ -81,7 +81,7 @@ for c in 040 040f; do
     BR="$OPENTLS/third_party/bearssl"
     BRDEFS="-DBR_USE_UNIX_TIME=0 -DBR_USE_WIN32_TIME=0 -DBR_USE_URANDOM=0 -DBR_USE_WIN32_RAND=0 -DBR_RDRAND=0 -DBR_AES_X86NI=0 -DBR_SSE2=0 -DBR_POWER8=0 -DBR_INT128=0 -DBR_UMUL128=0 -DBR_64=0 -DBR_LE_UNALIGNED=0 -DBR_BE_UNALIGNED=0 -DOT_LOMUL=1"
     run "${P}gcc" $CF $COMMON -DHOST -o bin/t7-$c src/t7_64bit.c -lm && ok bin/t7-$c || bad bin/t7-$c
-    # OpenTLS's own flags for BearSSL (build-amiga-tls.sh), plus this driver
+    # GFOpenTLS's own flags for BearSSL (build-amiga-tls.sh), plus this driver
     run "${P}gcc" $CF $COMMON -fno-tree-loop-distribute-patterns -DHOST $BRDEFS -I"$BR/inc" -I"$BR/src" -o bin/t8-$c src/t8_bearssl_kat.c "$BR"/src/*/*.c && ok bin/t8-$c || bad bin/t8-$c
     run "${P}gcc" $CF $COMMON -fno-tree-loop-distribute-patterns -DHOST -I"$OPENTLS/include" -I"$OPENTLS/library" -o bin/t9-$c src/t9_opencrypto_kat.c "$OPENTLS"/src/opencrypto_*.c && ok bin/t9-$c || bad bin/t9-$c
     # t10 deliberately WITHOUT -fno-tree-loop-distribute-patterns: it checks the memmove fix

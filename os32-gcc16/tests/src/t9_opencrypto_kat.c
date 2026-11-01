@@ -1,4 +1,4 @@
-/* occ.c: OpenCrypto's own 68k code (src/opencrypto_*.c, much of it 64-bit
+/* occ.c: GFOpenCrypto's own 68k code (src/opencrypto_*.c, much of it 64-bit
  * arithmetic) from fixed inputs, one line per call; host output is the
  * reference. */
 #include <string.h>

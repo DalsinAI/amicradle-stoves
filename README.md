@@ -1,6 +1,6 @@
-# AmigaChrome stoves
+# AmiCradle stoves
 
-Stoves are the compilers AmigaChrome's Kitchen cooks Amiga builds with. This
+Stoves are the compilers AmiCradle's Kitchen cooks Amiga builds with. This
 repository holds the recipe for each one: pinned and verified sources, a
 build script, an identity file, and the tests that prove it works on the
 machine it targets. Built stoves are published as releases.
@@ -34,7 +34,7 @@ LC/EC040). Two fixes, both in `build/`:
   that `-m68040` alone links `libm020` and not `libm881`, and that `-m68881`
   still links `libm881`. Run it when a stove is built (os32-gcc16 is built by
   openamigagcc, os32 is bebbo's amiga-gcc). It refuses a stove under
-  `~/AmigaChrome/stoves` unless `LIVE_OK=1`: a stove in use is changed only
+  `~/AmiCradle/stoves` unless `LIVE_OK=1`: a stove in use is changed only
   on purpose. `--check-only` just checks. The `-specs=` flag stays harmless on
   a stove that has the fix.
 
@@ -46,7 +46,7 @@ refuse to build (`DEPENDENCY_GATE_FAILED`) until a stove holds it in
 SOURCE` stages it with the gameports checkout's own `port_dependencies.py`:
 every hash is checked first, only `port-deps/` is written, and a stove that
 already verifies is left as it is. `--check-only` just checks; a live stove
-under `~/AmigaChrome/stoves` needs `LIVE_OK=1`, as for the specs.
+under `~/AmiCradle/stoves` needs `LIVE_OK=1`, as for the specs.
 
 The aros68k-gcc16 recipe makes `-mcpu=68040` with soft float its default
 through its own specs file (see its README).

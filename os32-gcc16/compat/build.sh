@@ -2,12 +2,12 @@
 # Copyright (c) 2026 AmigaChrome Team. MIT licence.
 # libos32compat.a for the os32-gcc16 stove: the symbols libstdc++ (GCC 16) expects
 # and libnix lacks, aligned allocation, and long double maths through double.
-#   build.sh [OUT_DIR]       (default: this folder)   STOVE (default ~/AmigaChrome/stoves/os32-gcc16)
+#   build.sh [OUT_DIR]       (default: this folder)   STOVE (default ~/AmiCradle/stoves/os32-gcc16)
 # Link it after libstdc++: -lstdc++ -L<stove>/compat -los32compat, with
 # -Wl,--wrap=malloc,--wrap=calloc,--wrap=realloc,--wrap=free for aligned_alloc.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
-STOVE=${STOVE:-$HOME/AmigaChrome/stoves/os32-gcc16}
+STOVE=${STOVE:-$HOME/AmiCradle/stoves/os32-gcc16}
 OUT=${1:-$HERE}
 P=$STOVE/prefix/bin/m68k-amigaos-
 # The compat sources at -O2, the long double wrappers at -Os -fno-builtin (so
