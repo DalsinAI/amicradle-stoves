@@ -22,7 +22,7 @@ On 12 October 2026 the stove on the Team's PC was brought up to openamigagcc's
 
 ## The compiler it carries: toolchain.lock (1 November 2026)
 
-The stove is placed by hand on the Cradle machine (`~/AmigaChrome/stoves/os32-gcc16`), and until now its
+The stove is placed by hand on the Cradle machine (`~/AmiCradle/stoves/os32-gcc16`; today still `~/AmigaChrome/stoves/os32-gcc16` there), and until now its
 compiler release was written only in that stove's own `STOVE.json` (`release`, `compilerArchive`). Dale,
 1 November 2026: update it to the latest, GFOpenAmigaGCC 16.2.0-open4 (openamigartg's `library/build.sh`
 refuses anything else). `toolchain.lock` pins that release here: tag `v16.2.0-open4` (6b6d0ced), the x86-64
@@ -38,7 +38,8 @@ the download). The compiler still names itself `OpenAmigaGCC 16.2.0-open4` in `-
   everything of the live stove but its compiler (see the script's head), and checks it. The live stove is only
   read. `tests/upgrade/test_upgrade.sh ARCHIVE` tests it on a pretend open3 stove.
 
-On the Cradle machine, to move the stove to open4 (about 2 minutes, plus OpenNDK's libamiga builds):
+On the Cradle machine, to move the stove to open4 (about 2 minutes, plus OpenNDK's libamiga builds; with the
+folders as they are named there today, `~/AmigaChrome`, until the rename moves them to `~/AmiCradle`):
 
 ```sh
 cd ~/AmigaChrome/stoves

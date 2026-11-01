@@ -4,7 +4,7 @@
 #
 #   os32-gcc16/upgrade.sh STOVES ARCHIVE
 #
-# STOVES is the stoves folder (~/AmigaChrome/stoves, Settings > Folders' "Stoves"); ARCHIVE the release's
+# STOVES is the stoves folder (~/AmiCradle/stoves, Settings > Folders' "Stoves"); ARCHIVE the release's
 # x86-64 toolchain (toolchain.lock's archive_url). It:
 #   1. refuses an archive whose SHA-256 isn't toolchain.lock's;
 #   2. makes STOVES/.next/os32-gcc16 (a stoves folder of its own, so the AmiCradle scripts below can work on
@@ -93,9 +93,9 @@ STOVE="$NEXT" OUT="$TMP/identity" sh "$HERE/identity/build-amiga.sh"
 cat <<EOF
 
 The next stove is in $NEXT; the live one is untouched. Then, on this machine
-(AMIGACHROME: the AmiCradle checkout with scripts/):
-  python3 \$AMIGACHROME/scripts/os32_stove.py --reapply-kits --stoves "$NEXT_ROOT" --stove os32-gcc16
-  python3 \$AMIGACHROME/scripts/stove_openndk.py use "$NEXT"
+(AMICRADLE: the AmiCradle install or checkout with scripts/):
+  python3 \$AMICRADLE/scripts/os32_stove.py --reapply-kits --stoves "$NEXT_ROOT" --stove os32-gcc16
+  python3 \$AMICRADLE/scripts/stove_openndk.py use "$NEXT"
   mkdir -p "$STOVES/archive"
   mv "$LIVE" "$STOVES/archive/os32-gcc16-before-$release-\$(date +%Y%m%dT%H%M%S)" && mv "$NEXT" "$LIVE"
 and prove it with Cradle's stove_build: os32-gcc16, DalsinAI/amigachrome-stoves, target os32-gcc16/identity.
