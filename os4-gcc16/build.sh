@@ -58,6 +58,10 @@ CLIB4_REF=30e487d28f9b3d12fc9e4adb641aeff84050de3b
 # Hyperion's SDK, as adtools fetches it (54.25 is file 137, 54.16 is 127).
 SDK_VERSION=54.25
 SDK_URL='https://www.hyperion-entertainment.biz/index.php?option=com_registration&amp;view=download&amp;format=raw&amp;file=137'
+# Its SHA-256, as the stove built from it records it (stove.json's
+# sdk.archiveSha256): a downloaded or --sdk archive must match before it is
+# unpacked, so a swapped archive never reaches the stove.
+SDK_SHA256=FILL_IN_FROM_STOVE_JSON
 
 PORTS="$WORK/ports"; SRC="$WORK/src"; BUILD="$WORK/build"; LOGS="$WORK/logs"
 # The hash covers build.sh up to the "# 8. Smoke tests" line, which must stay.
@@ -176,6 +180,12 @@ if ! done_step sdk; then
     # An LhA archive has "-lh" at offset 2; a web page instead means the download failed.
     [ "$(head -c 5 "$archive" | tail -c 3)" = "-lh" ] \
         || { echo "$archive is not an LhA archive: download the SDK from Hyperion and pass --sdk FILE" >&2; exit 5; }
+    got="$(sha256sum "$archive" | cut -d' ' -f1)"
+    if [ "$got" != "$SDK_SHA256" ]; then
+        echo "$archive has SHA-256 $got, not SDK $SDK_VERSION's $SDK_SHA256: not unpacked" >&2
+        [ -n "$SDK_FILE" ] || rm -f "$archive"   # a bad download is fetched again next time
+        exit 5
+    fi
     rm -rf "$WORK/sdk-unpack" && mkdir -p "$WORK/sdk-unpack"
     ( cd "$WORK/sdk-unpack" && lha xqf "$archive" \
       && cd SDK_Install && for a in newlib*.lha base.lha execsg*.lha; do [ -f "$a" ] && lha xqf "$a"; done ) \

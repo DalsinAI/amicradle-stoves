@@ -47,8 +47,9 @@ The OS 4.1 API headers (`exec`, `dos`, the interfaces) and newlib's start-up
 code come from Hyperion's AmigaOS 4.1 SDK. It is a free download, but it is
 not ours to redistribute. `build.sh` downloads it from Hyperion on the machine
 that builds the stove, or takes the archive you give it with `--sdk`. It is
-never committed and never published with a stove. `stove.json` records its
-SHA-256.
+never committed and never published with a stove. `build.sh` pins its
+SHA-256 (`SDK_SHA256`) and refuses an archive that differs before unpacking
+it; `stove.json` records it too.
 
 ## Build it
 
