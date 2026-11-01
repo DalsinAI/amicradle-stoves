@@ -15,7 +15,7 @@ We are The AmiCradle Team, who build the AmiCradle stoves alongside SacredTrees:
 ## Copyright holder
 
 The build scripts, `sources.lock` files, tests and documents are
-Copyright (c) 2026 AmigaChrome Team, released under the MIT licence (`LICENSE`).
+Copyright (c) 2026 AmiCradle Team, released under the MIT licence (`LICENSE`).
 
 ## Fetched at build time, not committed
 

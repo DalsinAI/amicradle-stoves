@@ -4,7 +4,7 @@
 # says open3, with ndk-include as a link, ndk13-include, openndk-fd and port-deps).
 #   os32-gcc16/tests/upgrade/test_upgrade.sh ARCHIVE [SCRATCH]
 # ARCHIVE: the release's x86-64 toolchain (toolchain.lock's archive_url).
-# MIT, Copyright (c) 2026 AmigaChrome Team.
+# MIT, Copyright (c) 2026 AmiCradle Team.
 set -u
 HERE=$(cd "$(dirname "$0")/../.." && pwd)
 ARCHIVE=${1:?the release archive}

@@ -16,7 +16,7 @@
 #   4. checks the new compiler says the release, and that a C program builds and links with it.
 # The live stove is only read. What to run next (kits, OpenNDK, the swap) is printed at the end, and in
 # os32-gcc16/README.md.
-# MIT, Copyright (c) 2026 AmigaChrome Team.
+# MIT, Copyright (c) 2026 AmiCradle Team.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 LOCK="$HERE/toolchain.lock"

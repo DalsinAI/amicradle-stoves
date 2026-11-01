@@ -3,7 +3,7 @@
 # prints what the stove's compiler and STOVE.json say, fails unless the compiler is the release in
 # ../toolchain.lock, then builds and links a small C program with it (no NDK needed) into OUT.
 #   STOVE=~/AmiCradle/stoves/os32-gcc16 OUT=/tmp/id sh os32-gcc16/identity/build-amiga.sh
-# MIT, Copyright (c) 2026 AmigaChrome Team.
+# MIT, Copyright (c) 2026 AmiCradle Team.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 LOCK="$HERE/../toolchain.lock"
