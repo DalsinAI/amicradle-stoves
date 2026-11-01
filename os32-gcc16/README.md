@@ -20,6 +20,40 @@ On 12 October 2026 the stove on the Team's PC was brought up to openamigagcc's
   `pthread_detach` (#8), a CAS that returns the old value (#9), and a
   `pthread_join` that waits for a signal (#10).
 
+## The compiler it carries: toolchain.lock (1 November 2026)
+
+The stove is placed by hand on the Cradle machine (`~/AmigaChrome/stoves/os32-gcc16`), and until now its
+compiler release was written only in that stove's own `STOVE.json` (`release`, `compilerArchive`). Dale,
+1 November 2026: update it to the latest, GFOpenAmigaGCC 16.2.0-open4 (openamigartg's `library/build.sh`
+refuses anything else). `toolchain.lock` pins that release here: tag `v16.2.0-open4` (6b6d0ced), the x86-64
+toolchain `openamigagcc-16.2.0-open4-x86_64-linux.tar.xz`, SHA-256
+`495319a2ffd803278f8827cad70074029c7aa9ecbe05d037e8646ba43ab94ab2` (the release's SHA256SUMS, checked against
+the download). The compiler still names itself `OpenAmigaGCC 16.2.0-open4` in `--version`.
+
+- `identity/build-amiga.sh`: for Cradle's `stove_build` (stove os32-gcc16, repo DalsinAI/amigachrome-stoves,
+  target `os32-gcc16/identity`). Prints the compiler's `--version` and the stove's `STOVE.json`, fails unless
+  the compiler is toolchain.lock's release, then builds a small C program. On 1 November 2026 it said
+  `OpenAmigaGCC 16.2.0-open3`.
+- `upgrade.sh STOVES ARCHIVE`: makes the next stove in `STOVES/.next/os32-gcc16` from the verified archive and
+  everything of the live stove but its compiler (see the script's head), and checks it. The live stove is only
+  read. `tests/upgrade/test_upgrade.sh ARCHIVE` tests it on a pretend open3 stove.
+
+On the Cradle machine, to move the stove to open4 (about 2 minutes, plus OpenNDK's libamiga builds):
+
+```sh
+cd ~/AmigaChrome/stoves
+curl -LO https://github.com/DalsinAI/openamigagcc/releases/download/v16.2.0-open4/openamigagcc-16.2.0-open4-x86_64-linux.tar.xz
+sh ~/path/to/amigachrome-stoves/os32-gcc16/upgrade.sh ~/AmigaChrome/stoves openamigagcc-16.2.0-open4-x86_64-linux.tar.xz
+python3 ~/AmigaChrome/scripts/os32_stove.py --reapply-kits --stoves ~/AmigaChrome/stoves/.next --stove os32-gcc16
+python3 ~/AmigaChrome/scripts/stove_openndk.py use ~/AmigaChrome/stoves/.next/os32-gcc16
+# anything the old prefix had that the new one hasn't (should list nothing that matters):
+diff <(cd os32-gcc16/prefix/m68k-amigaos && find include lib | sort) <(cd .next/os32-gcc16/prefix/m68k-amigaos && find include lib | sort) | grep '^<'
+mkdir -p archive && mv os32-gcc16 archive/os32-gcc16-before-open4-$(date +%Y%m%dT%H%M%S) && mv .next/os32-gcc16 os32-gcc16
+```
+
+Then Cradle's `stove_build` of `os32-gcc16/identity` says `identity: 16.2.0-open4`. To go back: move the
+archived folder back in place of `os32-gcc16`.
+
 This folder adds broader qualification tests, which need no NDK:
 
 - `tests/`: nineteen programs (and t3's pieces, t3a-t3h) built with `tests/build-tests.sh`, run on an instance
