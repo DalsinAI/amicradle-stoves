@@ -112,7 +112,7 @@ machine and `Execute DH1:GCC16/run-tests`. Results land in
 
 ## Results
 
-First qualification, 2 October 2026, on an AmigaChrome A1200 with the AC090
+First qualification, 2 October 2026, on an AmiCradle A1200 with the AC090
 running AROS 68k (Instance-21). Raw output in `tests/results/2026-10-02/`.
 
 | Test | GCC 16.2 | GCC 6.5 |

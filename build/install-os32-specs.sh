@@ -11,7 +11,7 @@
 # 68060 adds libm881. The new *link_cpu is the one in m68k-soft-m68040.specs.
 # Then it checks: -m68040 alone links libm020 and not libm881; with -m68881,
 # libm881. --check-only only checks.
-# A stove under ~/AmigaChrome/stoves is in use: set LIVE_OK=1 to write there.
+# A stove under ~/AmiCradle/stoves is in use: set LIVE_OK=1 to write there.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 CHECK_ONLY=0
@@ -26,7 +26,7 @@ NEW=$(sed -n '/^\*link_cpu:$/{n;p;q}' "$HERE/m68k-soft-m68040.specs")
 
 if [ $CHECK_ONLY = 0 ]; then
     case "$STOVE/" in
-        "$HOME/AmigaChrome/stoves/"*) [ "${LIVE_OK:-0}" = 1 ] || { echo "$STOVE is a live stove: set LIVE_OK=1 to write its specs" >&2; exit 3; } ;;
+        "$HOME/AmiCradle/stoves/"*) [ "${LIVE_OK:-0}" = 1 ] || { echo "$STOVE is a live stove: set LIVE_OK=1 to write its specs" >&2; exit 3; } ;;
     esac
     TMP="$SPECS.new"
     "$GCC" -dumpspecs | awk -v new="$NEW" '

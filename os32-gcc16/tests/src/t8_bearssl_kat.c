@@ -1,4 +1,4 @@
-/* kat.c: drive the BearSSL code OpenTLS's builds use, from a fixed
+/* kat.c: drive the BearSSL code GFOpenTLS's builds use, from a fixed
  * seed, and print one line per primitive. The host build is the reference;
  * the m68k builds (-m68040 with and without -m68881) must print the same lines. */
 #include <string.h>

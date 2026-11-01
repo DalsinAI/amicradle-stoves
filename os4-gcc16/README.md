@@ -4,7 +4,7 @@ A modern C and C++ compiler for AmigaOS 4.1 on the PowerPC (`ppc-amigaos`):
 GCC 16.2.0 with binutils 2.47, built from the pinned GNU releases and our own
 AmigaOS patches, on the machine that uses it. No Docker and no prebuilt
 compilers. On a Cradle machine it is the `os4` stove
-(`~/AmigaChrome/stoves/os4`), which builds the AC460's guest software.
+(`~/AmiCradle/stoves/os4`), which builds the AC460's guest software.
 
 **Status: experimental.** First written 14 October 2026, and first built on the
 Cradle machine the same day with every smoke test passing (see Results).
@@ -53,7 +53,7 @@ SHA-256.
 ## Build it
 
 ```sh
-./build.sh --stove ~/AmigaChrome/stoves/os4 --work "${AMIGACHROME_DEV:-$HOME/AmigaChrome-dev}/stove-work/os4-gcc16"
+./build.sh --stove ~/AmiCradle/stoves/os4 --work "${AMICRADLE_DEV:-$HOME/AmiCradle-dev}/stove-work/os4-gcc16"
 ```
 
 | Option | Default | What |
@@ -91,7 +91,7 @@ bzip2 curl git python3 patch lhasa gpgv`.
 ## Use it
 
 ```sh
-PATH=~/AmigaChrome/stoves/os4/prefix/bin:$PATH
+PATH=~/AmiCradle/stoves/os4/prefix/bin:$PATH
 ppc-amigaos-gcc -O2 -o hello hello.c                    # newlib
 ppc-amigaos-gcc -mcrt=clib2 -O2 -o hello hello.c        # runs on a bare OS 4.1
 ppc-amigaos-gcc -mcrt=clib2 -mbaserel -O2 -o hello hello.c   # base-relative data
@@ -124,7 +124,7 @@ big-endian PowerPC ELF executable that keeps its relocations:
 | `hello.cpp` with newlib and clib2 | C++, libstdc++, exceptions |
 | `device.c` | a device-style link: no start files, no C library, libgcc's 64-bit division |
 
-Run-time tests on an AmigaChrome AC460 (OS 4.1) come next.
+Run-time tests on an AmiCradle AC460 (OS 4.1) come next.
 
 ## Results
 

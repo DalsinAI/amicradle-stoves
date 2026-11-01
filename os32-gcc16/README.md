@@ -44,8 +44,8 @@ This folder adds broader qualification tests, which need no NDK:
 
   All 14 failures fail identically with upstream GCC there. They need
   `-fwrapv`, trampolines, `-finstrument-functions` or a full C library.
-- **BearSSL and OpenCrypto agree with a PC at `-m68060`.** Built the way
-  OpenTLS's CPU=060 build compiles them, both give the PC's output with every
+- **BearSSL and GFOpenCrypto agree with a PC at `-m68060`.** Built the way
+  GFOpenTLS's CPU=060 build compiles them, both give the PC's output with every
   compiler tried. That code doesn't contain the push64 pattern, which is why
   t8 and t9 alone could not show it.
 
@@ -80,8 +80,8 @@ every build passes `-m68040`.
 | t5 | a 3,000-case `switch` (`-mlong-jump-table-offsets`) | 040 |
 | t6 | the FPCR clash (as openamigagcc 0003 fixed it) | 040f |
 | t7 | 64-bit arithmetic: stack arguments, spills, shifts, multiplies, divides, varargs, structs | 040, 040f |
-| t8 | BearSSL as OpenTLS compiles it (i15, ctmul32, m15 curves), output equal to `expected/` | 040, 040f |
-| t9 | OpenCrypto (SHA-2, X25519, Ed25519, ChaCha20-Poly1305, AES, RSA, ECDSA, sntrup761), output equal to `expected/` | 040, 040f |
+| t8 | BearSSL as GFOpenTLS compiles it (i15, ctmul32, m15 curves), output equal to `expected/` | 040, 040f |
+| t9 | GFOpenCrypto (SHA-2, X25519, Ed25519, ChaCha20-Poly1305, AES, RSA, ECDSA, sntrup761), output equal to `expected/` | 040, 040f |
 | t10 | the loop shift and an overlapping backward copy | 040, 040f |
 | t11 | exceptions thrown and caught in 8 threads; carried out of `async`, `promise`, `packaged_task` and an `exception_ptr` | 040 |
 | t12 | `thread_local` objects with constructors and destructors in 80 threads: destroyed by the time `join()` returns, counts equal | 040 |
@@ -123,7 +123,7 @@ with both fixes, each a problem of its own:
 
 ```sh
 cd os32-gcc16/tests
-STOVE=~/AmigaChrome/stoves/os32-gcc16 OPENTLS=~/openamigatls ./build-tests.sh
+STOVE=~/AmiCradle/stoves/os32-gcc16 OPENTLS=~/openamigatls ./build-tests.sh
 # copy bin/ and run-tests to the instance, Execute run-tests, copy results/ back
 ./check-results.sh results
 ```

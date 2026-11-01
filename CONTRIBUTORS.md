@@ -2,11 +2,11 @@
 
 ## Creator and maintainer
 
-- **SacredTrees** ([@SacredTrees](https://github.com/SacredTrees)): created and maintains these AmigaChrome stove builds. The compilers themselves are the work of their upstream projects, credited below.
+- **SacredTrees** ([@SacredTrees](https://github.com/SacredTrees)): created and maintains these AmiCradle stove builds. The compilers themselves are the work of their upstream projects, credited below.
 
-## The AmigaChrome team
+## The AmiCradle team
 
-We are The AmigaChrome Team, who build the AmigaChrome stoves alongside SacredTrees:
+We are The AmiCradle Team, who build the AmiCradle stoves alongside SacredTrees:
 
 - **Agnus**, our coordinator, who keeps every thread moving.
 - **Thufir**, **Kynes** and **Galen**, who started the work on SacredTrees's x86 cores.

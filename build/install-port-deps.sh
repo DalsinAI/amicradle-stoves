@@ -10,12 +10,12 @@
 # toolchain/port-dependencies.lock.json pins every file by SHA-256 and its
 # scripts/port_dependencies.py does the staging and checking, so the lock has
 # one home. SOURCE holds the locked include/ and lib/ files (on Daletop,
-# $AMIGACHROME_DEV/webkit-os32-040/m68k-amigaos); nothing is searched for or
+# $AMICRADLE_DEV/webkit-os32-040/m68k-amigaos); nothing is searched for or
 # downloaded. Every hash is checked before anything is written, and only
 # port-deps/ is written. A stove whose port-deps/ already verifies is left as
 # it is; one that does not verify is not overwritten (move it aside first).
 # --check-only only checks.
-# A stove under ~/AmigaChrome/stoves is in use: set LIVE_OK=1 to write there.
+# A stove under ~/AmiCradle/stoves is in use: set LIVE_OK=1 to write there.
 # Undo: remove prefix/m68k-amigaos/port-deps/.
 set -eu
 CHECK_ONLY=0
@@ -39,7 +39,7 @@ fi
 [ $# -eq 3 ] || { echo "$DEST does not verify; give SOURCE to stage it" >&2; exit 2; }
 SRC=$(cd "$3" && pwd)
 case "$STOVE/" in
-    "$HOME/AmigaChrome/stoves/"*) [ "${LIVE_OK:-0}" = 1 ] || { echo "$STOVE is a live stove: set LIVE_OK=1 to stage its port-deps" >&2; exit 3; } ;;
+    "$HOME/AmiCradle/stoves/"*) [ "${LIVE_OK:-0}" = 1 ] || { echo "$STOVE is a live stove: set LIVE_OK=1 to stage its port-deps" >&2; exit 3; } ;;
 esac
 [ -e "$DEST" ] && { echo "$DEST exists but does not verify; not overwritten (move it aside first)" >&2; exit 4; }
 python3 -I "$PD" stage --stove "$STOVE" --source "$SRC"
