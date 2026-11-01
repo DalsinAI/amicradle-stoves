@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2026 AmigaChrome Team. MIT licence.
+# Copyright (c) 2026 AmiCradle Team. MIT licence.
 # install-os32-specs.sh [--check-only] STOVE
 # Gives an AmigaOS 3.x stove (os32-gcc16 or os32, bebbo's m68k-amigaos-gcc) the
 # 68040 soft-float link as its default: the stove's full specs (gcc -dumpspecs)

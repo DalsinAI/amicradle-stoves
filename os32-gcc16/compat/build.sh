@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2026 AmigaChrome Team. MIT licence.
+# Copyright (c) 2026 AmiCradle Team. MIT licence.
 # libos32compat.a for the os32-gcc16 stove: the symbols libstdc++ (GCC 16) expects
 # and libnix lacks, aligned allocation, and long double maths through double.
 #   build.sh [OUT_DIR]       (default: this folder)   STOVE (default ~/AmiCradle/stoves/os32-gcc16)

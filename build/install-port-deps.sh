@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (c) 2026 AmigaChrome Team. MIT licence.
+# Copyright (c) 2026 AmiCradle Team. MIT licence.
 # install-port-deps.sh [--check-only] STOVE GAMEPORTS [SOURCE]
 # Stages the codec inventory the game ports link (zlib, PNG, JPEG, FreeType:
 # archives and their headers) into an AmigaOS 3.x stove, at
