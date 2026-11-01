@@ -38,7 +38,7 @@ the download). The compiler still names itself `OpenAmigaGCC 16.2.0-open4` in `-
   everything of the live stove but its compiler (see the script's head), and checks it. The live stove is only
   read. `tests/upgrade/test_upgrade.sh ARCHIVE` tests it on a pretend open3 stove.
 
-On the Cradle machine, to move the stove to open4 (about 2 minutes, plus OpenNDK's libamiga builds; with the
+On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds; with the
 folders as they are named there today, `~/AmigaChrome`, until the rename moves them to `~/AmiCradle`):
 
 ```sh
