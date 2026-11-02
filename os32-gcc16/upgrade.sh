@@ -19,11 +19,13 @@
 # MIT, Copyright (c) 2026 AmiCradle Team.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
-LOCK="$HERE/toolchain.lock"
+LOCK=${OS32_GCC16_LOCK:-"$HERE/toolchain.lock"}   # the variable only for tests/upgrade
 STOVES=${1:?usage: upgrade.sh STOVES ARCHIVE}
 ARCHIVE=${2:?usage: upgrade.sh STOVES ARCHIVE}
 lock() { sed -n "s/^$1=//p" "$LOCK"; }
 release=$(lock release); want=$(lock identity); top=$(lock top)
+# The name the release goes by, from its identity: "GFOpenAmigaGCC" from open5, "OpenAmigaGCC" up to open4.
+name=$(printf %s "$want" | sed -n 's/^(\(.*\) [^ ]*)$/\1/p'); name=${name:-GFOpenAmigaGCC}
 LIVE="$STOVES/os32-gcc16"
 NEXT_ROOT="$STOVES/.next"
 NEXT="$NEXT_ROOT/os32-gcc16"
@@ -43,6 +45,13 @@ mkdir -p "$NEXT_ROOT"
 TMP=$(mktemp -d "$NEXT_ROOT/.unpack.XXXXXX")
 trap 'rm -rf "$TMP"' EXIT
 tar -C "$TMP" -xJf "$ARCHIVE"
+# Its folder is toolchain.lock's top; a release named the other way (openamigagcc- up to open4,
+# gfopenamigagcc- from open5) is taken too.
+if [ ! -x "$TMP/$top/bin/m68k-amigaos-gcc" ]; then
+    for t in "gfopenamigagcc-$release-x86_64-linux" "openamigagcc-$release-x86_64-linux"; do
+        [ -x "$TMP/$t/bin/m68k-amigaos-gcc" ] && { top=$t; break; }
+    done
+fi
 [ -x "$TMP/$top/bin/m68k-amigaos-gcc" ] || { echo "the archive has no $top/bin/m68k-amigaos-gcc"; exit 1; }
 mkdir "$NEXT"
 for f in "$LIVE"/* "$LIVE"/.[!.]*; do
@@ -63,20 +72,20 @@ done
 echo "carried from the live prefix:${carried:- nothing}"
 
 echo "== 3. STOVE.json and README.txt"
-python3 - "$NEXT" "$release" "$(lock archive)" "$(lock archive_sha256)" "$(lock tag)" "$(lock commit)" <<'PY'
+python3 - "$NEXT" "$release" "$(lock archive)" "$(lock archive_sha256)" "$(lock tag)" "$(lock commit)" "$name" <<'PY'
 import json, sys, time
 from pathlib import Path
-stove, release, archive, sha, tag, commit = sys.argv[1:]
+stove, release, archive, sha, tag, commit, name = sys.argv[1:]
 p = Path(stove) / "STOVE.json"
 d = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"schema": 1, "id": "os32-gcc16"}
 before = d.get("release")
-d["release"] = "OpenAmigaGCC " + release
+d["release"] = name + " " + release
 d["compilerArchive"] = {"name": archive, "sha256": sha, "tag": tag, "commit": commit}
 d["upgraded"] = {"from": before, "at": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()), "by": "amicradle-stoves os32-gcc16/upgrade.sh"}
 p.write_text(json.dumps(d, indent=2) + "\n", encoding="utf-8")
 r = Path(stove) / "README.txt"
 old = r.read_text(encoding="utf-8") if r.is_file() else ""
-head = (f"OS 3.2 stove, OpenAmigaGCC {release} ({time.strftime('%d %B %Y')})\n"
+head = (f"OS 3.2 stove, {name} {release} ({time.strftime('%d %B %Y')})\n"
         + "=" * 60 + "\n\n"
         + f"Made by amicradle-stoves os32-gcc16/upgrade.sh from DalsinAI/gfopengcc {tag} ({commit[:7]}),\n"
         + f"{archive} (sha256 {sha[:8]}...{sha[-5:]}), with everything else carried from the\n"
@@ -85,7 +94,7 @@ head = (f"OS 3.2 stove, OpenAmigaGCC {release} ({time.strftime('%d %B %Y')})\n"
         + "-" * 67 + "\n\n")
 r.write_text(head + old, encoding="utf-8")
 PY
-echo "STOVE.json: OpenAmigaGCC $release"
+echo "STOVE.json: $name $release"
 
 echo "== 4. the new compiler"
 STOVE="$NEXT" OUT="$TMP/identity" sh "$HERE/identity/build-amiga.sh"
