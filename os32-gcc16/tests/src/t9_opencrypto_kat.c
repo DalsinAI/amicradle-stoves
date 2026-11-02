@@ -3,7 +3,7 @@
  * reference. */
 #include <string.h>
 #include <stdint.h>
-#include "opencrypto/opencrypto.h"
+#include "gfopencrypto/gfopencrypto.h"
 
 #ifdef HOST
 #include <stdio.h>
