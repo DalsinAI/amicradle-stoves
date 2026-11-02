@@ -8,7 +8,7 @@ output matches a PC's exactly.
 
 Status: experimental. `core` and `compiler_builtins` only (`no_std`); there is
 no AmigaOS target, `alloc` or `std` yet. Load files go through
-[elf.library](https://github.com/DalsinAI/amigachrome-guest/tree/main/libraries/openelf).
+[elf.library](https://github.com/DalsinAI/amicradle-guest/tree/main/libraries/openelf).
 
 ## What was wrong
 

@@ -72,13 +72,13 @@ d = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {"schema": 1, 
 before = d.get("release")
 d["release"] = "OpenAmigaGCC " + release
 d["compilerArchive"] = {"name": archive, "sha256": sha, "tag": tag, "commit": commit}
-d["upgraded"] = {"from": before, "at": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()), "by": "amigachrome-stoves os32-gcc16/upgrade.sh"}
+d["upgraded"] = {"from": before, "at": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()), "by": "amicradle-stoves os32-gcc16/upgrade.sh"}
 p.write_text(json.dumps(d, indent=2) + "\n", encoding="utf-8")
 r = Path(stove) / "README.txt"
 old = r.read_text(encoding="utf-8") if r.is_file() else ""
 head = (f"OS 3.2 stove, OpenAmigaGCC {release} ({time.strftime('%d %B %Y')})\n"
         + "=" * 60 + "\n\n"
-        + f"Made by amigachrome-stoves os32-gcc16/upgrade.sh from DalsinAI/openamigagcc {tag} ({commit[:7]}),\n"
+        + f"Made by amicradle-stoves os32-gcc16/upgrade.sh from DalsinAI/gfopengcc {tag} ({commit[:7]}),\n"
         + f"{archive} (sha256 {sha[:8]}...{sha[-5:]}), with everything else carried from the\n"
         + f"stove before it ({before}). Its kits and OpenNDK are put back by os32_stove.py --reapply-kits and\n"
         + "stove_openndk.py use (os32-gcc16/README.md). The stove before it is in stoves/archive/.\n\n"
@@ -98,5 +98,5 @@ The next stove is in $NEXT; the live one is untouched. Then, on this machine
   python3 \$AMICRADLE/scripts/stove_openndk.py use "$NEXT"
   mkdir -p "$STOVES/archive"
   mv "$LIVE" "$STOVES/archive/os32-gcc16-before-$release-\$(date +%Y%m%dT%H%M%S)" && mv "$NEXT" "$LIVE"
-and prove it with Cradle's stove_build: os32-gcc16, DalsinAI/amigachrome-stoves, target os32-gcc16/identity.
+and prove it with Cradle's stove_build: os32-gcc16, DalsinAI/amicradle-stoves, target os32-gcc16/identity.
 EOF

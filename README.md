@@ -8,7 +8,7 @@ machine it targets. Built stoves are published as releases.
 | Stove | Compiler | Builds programs for | Status |
 | --- | --- | --- | --- |
 | [aros68k-gcc16](aros68k-gcc16/) | GCC 16.2.0, binutils 2.47 | AROS 68k (68040) | Experimental |
-| [os32-gcc16](os32-gcc16/) | bebbo's GCC 16.2.0b (`amiga16.2`) | AmigaOS 3.x (68040) | Tests only: built by [openamigagcc](https://github.com/DalsinAI/openamigagcc) |
+| [os32-gcc16](os32-gcc16/) | bebbo's GCC 16.2.0b (`amiga16.2`) | AmigaOS 3.x (68040) | Tests only: built by [gfopengcc](https://github.com/DalsinAI/gfopengcc) |
 | [os4-gcc16](os4-gcc16/) | GCC 16.2.0, binutils 2.47, with our AmigaOS 4 patches | AmigaOS 4.1 PowerPC | Experimental |
 | [rust-m68k](rust-m68k/) | Rust 1.97.0 on LLVM 22.1 with our M68k fixes | 68040, `no_std` (`m68k-unknown-none-elf`) | Experimental |
 
@@ -33,12 +33,12 @@ LC/EC040). Two fixes, both in `build/`:
   line changed to `prefix/lib/gcc/m68k-amigaos/<version>/specs`, then checks
   that `-m68040` alone links `libm020` and not `libm881`, and that `-m68881`
   still links `libm881`. Run it when a stove is built (os32-gcc16 is built by
-  openamigagcc, os32 is bebbo's amiga-gcc). It refuses a stove under
+  gfopengcc, os32 is bebbo's amiga-gcc). It refuses a stove under
   `~/AmiCradle/stoves` unless `LIVE_OK=1`: a stove in use is changed only
   on purpose. `--check-only` just checks. The `-specs=` flag stays harmless on
   a stove that has the fix.
 
-The game ports (amigachrome-gameports: AstroMenace, AssaultCube, UQM,
+The game ports (amicradle-gameports: AstroMenace, AssaultCube, UQM,
 NXEngine) link zlib, PNG, JPEG and FreeType from an inventory pinned by
 SHA-256 in that repository's `toolchain/port-dependencies.lock.json`, and
 refuse to build (`DEPENDENCY_GATE_FAILED`) until a stove holds it in
@@ -61,7 +61,7 @@ headers. Its `build.sh` downloads the SDK on the machine that builds the stove
 
 The AmigaOS 3.2 stoves are not built here. They need the AmigaOS NDK, which is
 not ours to redistribute; they stay on the machines that hold their own NDK.
-`os32-gcc16/` holds tests for the GCC 16 one; its recipe and patches are DalsinAI/openamigagcc.
+`os32-gcc16/` holds tests for the GCC 16 one; its recipe and patches are DalsinAI/gfopengcc.
 
 ## Licences
 

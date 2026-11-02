@@ -1,5 +1,5 @@
 #!/bin/sh
-G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/openamigatls}
+G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/gfopentls}
 # run_bebbo.sh BB CPUFLAG SRC OUTTXT: compile one C file with bebbo's cc1 (m68k-amigaos), link as ELF, run under qemu
 P=$G/prefix/bin; H=$(cd "$(dirname "$0")" && pwd); Q=$G/src/qemu/build/qemu-m68k
 BB=$1; CPU=$2; SRC=$3; OUT=$4; W=$(mktemp -d)

@@ -2,7 +2,7 @@
 # Build the os32-gcc16 qualification tests with the stove (STOVE, default
 # ~/AmiCradle/stoves/os32-gcc16) into bin/. Copy bin/ and run-tests to an
 # instance (e.g. DH1:GCC16/), Execute run-tests there, copy results/ back and
-# run ./check-results.sh. OPENTLS points at an openamigatls checkout (t8, t9).
+# run ./check-results.sh. OPENTLS points at a gfopentls checkout (t8, t9).
 #
 # All builds are for the 68040 only, soft float by default, so one program runs
 # on a full 68040 and on an LC/EC040. Each test is built for:
@@ -14,7 +14,7 @@
 set -u
 cd "$(dirname "$0")"
 STOVE=${STOVE:-"$HOME/AmiCradle/stoves/os32-gcc16"}
-OPENTLS=${OPENTLS:-"$HOME/openamigatls"}
+OPENTLS=${OPENTLS:-"$HOME/gfopentls"}
 P="$STOVE/prefix/bin/m68k-amigaos-"
 SOFT="-specs=$(cd ../.. && pwd)/build/m68k-soft-m68040.specs"
 # libos32compat for the code model in FLAGS: compat/ (absolute), compat/libb (-fbaserel)
