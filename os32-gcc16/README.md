@@ -22,7 +22,7 @@ On 12 October 2026 the stove on the Team's PC was brought up to gfopengcc's
 
 ## The compiler it carries: toolchain.lock (1 November 2026)
 
-The stove is placed by hand on the Cradle machine (`~/AmiCradle/stoves/os32-gcc16`; today still `~/AmigaChrome/stoves/os32-gcc16` there), and until now its
+The stove is placed by hand on the Cradle machine (`~/AmiCradle/stoves/os32-gcc16`; the real folder there is still `~/AmigaChrome`, with `~/AmiCradle` a link to it), and until now its
 compiler release was written only in that stove's own `STOVE.json` (`release`, `compilerArchive`). Dale,
 1 November 2026: update it to the latest, GFOpenAmigaGCC 16.2.0-open4 (gfopenrtg's `library/build.sh`
 refuses anything else). `toolchain.lock` pins that release here: tag `v16.2.0-open4` (6b6d0ced), the x86-64
@@ -38,15 +38,15 @@ the download). The compiler still names itself `OpenAmigaGCC 16.2.0-open4` in `-
   everything of the live stove but its compiler (see the script's head), and checks it. The live stove is only
   read. `tests/upgrade/test_upgrade.sh ARCHIVE` tests it on a pretend open3 stove.
 
-On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds; with the
-folders as they are named there today, `~/AmigaChrome`, until the rename moves them to `~/AmiCradle`):
+On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds;
+`~/AmiCradle` is the folder, or the link to `~/AmigaChrome` on a machine set up before the rename):
 
 ```sh
-cd ~/AmigaChrome/stoves
+cd ~/AmiCradle/stoves
 curl -LO https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open4/openamigagcc-16.2.0-open4-x86_64-linux.tar.xz
-sh ~/path/to/amicradle-stoves/os32-gcc16/upgrade.sh ~/AmigaChrome/stoves openamigagcc-16.2.0-open4-x86_64-linux.tar.xz
-python3 ~/AmigaChrome/scripts/os32_stove.py --reapply-kits --stoves ~/AmigaChrome/stoves/.next --stove os32-gcc16
-python3 ~/AmigaChrome/scripts/stove_openndk.py use ~/AmigaChrome/stoves/.next/os32-gcc16
+sh ~/path/to/amicradle-stoves/os32-gcc16/upgrade.sh ~/AmiCradle/stoves openamigagcc-16.2.0-open4-x86_64-linux.tar.xz
+python3 ~/AmiCradle/scripts/os32_stove.py --reapply-kits --stoves ~/AmiCradle/stoves/.next --stove os32-gcc16
+python3 ~/AmiCradle/scripts/stove_openndk.py use ~/AmiCradle/stoves/.next/os32-gcc16
 # anything the old prefix had that the new one hasn't (should list nothing that matters):
 diff <(cd os32-gcc16/prefix/m68k-amigaos && find include lib | sort) <(cd .next/os32-gcc16/prefix/m68k-amigaos && find include lib | sort) | grep '^<'
 mkdir -p archive && mv os32-gcc16 archive/os32-gcc16-before-open4-$(date +%Y%m%dT%H%M%S) && mv .next/os32-gcc16 os32-gcc16
