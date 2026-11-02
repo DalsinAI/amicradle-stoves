@@ -1,5 +1,5 @@
 #!/bin/sh
-G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/openamigatls}
+G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/gfopentls}
 # run_torture.sh LIST CPUFLAG OUTFILE: compile and run each execute test, record PASS/FAIL/NOLINK/NOCOMP
 P=$G/prefix/bin; H=$(cd "$(dirname "$0")" && pwd); Q=${QEMU:-$G/src/qemu/build/qemu-m68k}
 LIST=$1; CPU=$2; OUT=$3; W=$(mktemp -d)

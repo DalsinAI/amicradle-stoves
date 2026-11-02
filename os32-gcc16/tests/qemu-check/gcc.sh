@@ -1,5 +1,5 @@
 #!/bin/sh
-G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/openamigatls}
+G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/gfopentls}
 G=$G; H=$G/host; P=$G/prefix; B=$G/build
 export PATH=$P/bin:$H/bin:$PATH
 echo "== libs $(date +%T)"; $(dirname "$0")/libs.sh || { echo LIBS-FAIL; exit 1; }

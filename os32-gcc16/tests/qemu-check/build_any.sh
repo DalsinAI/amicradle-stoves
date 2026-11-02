@@ -1,5 +1,5 @@
 #!/bin/sh
-G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/openamigatls}
+G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/gfopentls}
 # build_any.sh WHICH CPU TAG REF SRC...: WHICH = upstream | <bebbo build dir>; compile SRC, link with the mini libc, run under qemu-m68k, diff with REF
 P=$G/prefix/bin; H=$(cd "$(dirname "$0")" && pwd); Q=$G/src/qemu/build/qemu-m68k
 T=$OPENTLS

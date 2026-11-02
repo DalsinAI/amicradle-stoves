@@ -1,5 +1,5 @@
 #!/bin/sh
-G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/openamigatls}
+G=${G:-$HOME/gcc16}; OPENTLS=${OPENTLS:-$HOME/gfopentls}
 G=$G; H=$G/host; P=$G/prefix; B=$G/build/bebbo
 export PATH=$P/bin:$H/bin:$PATH
 rm -rf $B; mkdir -p $B && cd $B

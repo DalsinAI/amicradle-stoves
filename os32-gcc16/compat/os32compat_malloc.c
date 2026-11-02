@@ -1,4 +1,4 @@
-/* OpenBrowser (DalsinAI/openamigabrowser). Copyright (c) 2026 AmiCradle Team. MIT licence, see LICENSE. */
+/* OpenBrowser (DalsinAI/gfopenbrowser). Copyright (c) 2026 AmiCradle Team. MIT licence, see LICENSE. */
 /* aligned_alloc() for libnix, which has none, so that free() still works.
  *
  * Linked with -Wl,--wrap=malloc,--wrap=calloc,--wrap=realloc,--wrap=free

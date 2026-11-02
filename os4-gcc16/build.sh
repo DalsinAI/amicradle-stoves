@@ -210,7 +210,7 @@ if ! done_step xgcc; then
     done
     rm -rf "$GCC_BUILD" && mkdir -p "$GCC_BUILD"
     logged gcc-configure sh -c "cd '$GCC_BUILD' && '$GCC_SRC/configure' --target=$TARGET --prefix='$PREFIX' \
-        --with-pkgversion='AmiCradle os4-gcc16' --with-bugurl=https://github.com/DalsinAI/amigachrome-stoves/issues \
+        --with-pkgversion='AmiCradle os4-gcc16' --with-bugurl=https://github.com/DalsinAI/amicradle-stoves/issues \
         --enable-languages=c,c++ --enable-threads=amigaos --enable-lto --disable-tls --with-dwarf2 \
         --disable-libstdcxx-pch --disable-c++tools --disable-nls --disable-werror"
     logged gcc-make-xgcc make -C "$GCC_BUILD" -j"$JOBS" all-gcc
@@ -311,7 +311,7 @@ identity = {
     "schema": 1, "id": "os4-gcc16", "name": "AmigaOS 4.1 PowerPC, GCC 16.2",
     "target": "ppc-amigaos", "gcc": gcc, "binutils": binutils,
     "compilerVersion": subprocess.run([str(cc), "--version"], capture_output=True, text=True).stdout.splitlines()[0],
-    "recipe": {"repository": "DalsinAI/amigachrome-stoves", "commit": commit or None,
+    "recipe": {"repository": "DalsinAI/amicradle-stoves", "commit": commit or None,
                "patches": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((here / "patches").glob("*.patch"))}},
     "prefix": "prefix",
     "sdk": {"owner": "Hyperion Entertainment", "version": sdk_version, "path": "prefix/ppc-amigaos/SDK",

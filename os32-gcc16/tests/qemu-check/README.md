@@ -40,7 +40,7 @@ multiplies and divides a real 060 lacks; `-cpu any` is a ColdFire. Link at
 ## Scripts
 
 All take `G` (the work folder, default `~/gcc16`) and `OPENTLS` (an
-openamigatls checkout).
+gfopentls checkout).
 
 - `libs.sh`, `gcc.sh`: GMP, MPFR, MPC, then upstream GCC (C, libgcc) for
   m68k-elf, built `-O0` (about 7 minutes on 2 cores).

@@ -3,10 +3,10 @@
 # install-port-deps.sh [--check-only] STOVE GAMEPORTS [SOURCE]
 # Stages the codec inventory the game ports link (zlib, PNG, JPEG, FreeType:
 # archives and their headers) into an AmigaOS 3.x stove, at
-# prefix/m68k-amigaos/port-deps/ with its manifest.json. amigachrome-gameports
+# prefix/m68k-amigaos/port-deps/ with its manifest.json. amicradle-gameports
 # recipes (AstroMenace, AssaultCube, UQM, NXEngine) refuse to build without it
 # (DEPENDENCY_GATE_FAILED).
-# GAMEPORTS is a checkout of DalsinAI/amigachrome-gameports: its
+# GAMEPORTS is a checkout of DalsinAI/amicradle-gameports: its
 # toolchain/port-dependencies.lock.json pins every file by SHA-256 and its
 # scripts/port_dependencies.py does the staging and checking, so the lock has
 # one home. SOURCE holds the locked include/ and lib/ files (on Daletop,
@@ -24,7 +24,7 @@ CHECK_ONLY=0
 STOVE=$(cd "$1" && pwd)
 GP=$(cd "$2" && pwd)
 PD="$GP/scripts/port_dependencies.py"
-[ -f "$PD" ] || { echo "no $PD (is $GP an amigachrome-gameports checkout?)" >&2; exit 2; }
+[ -f "$PD" ] || { echo "no $PD (is $GP an amicradle-gameports checkout?)" >&2; exit 2; }
 [ -d "$STOVE/prefix/m68k-amigaos" ] || { echo "no $STOVE/prefix/m68k-amigaos" >&2; exit 2; }
 DEST="$STOVE/prefix/m68k-amigaos/port-deps"
 
