@@ -37,6 +37,25 @@ the download). The compiler still names itself `OpenAmigaGCC 16.2.0-open4` in `-
 - `upgrade.sh STOVES ARCHIVE`: makes the next stove in `STOVES/.next/os32-gcc16` from the verified archive and
   everything of the live stove but its compiler (see the script's head), and checks it. The live stove is only
   read. `tests/upgrade/test_upgrade.sh ARCHIVE` tests it on a pretend open3 stove.
+- `lock_release.py VERSION SHA256SUMS ARCHIVE COMMIT`: writes `toolchain.lock` for a release from its own
+  files. It reproduces open4's lock byte for byte (bar the comments).
+
+**Both names (2 November 2026).** From 16.2.0-open5 the compiler is GFOpenAmigaGCC by name too: its
+`--version` says `GFOpenAmigaGCC 16.2.0-open5` and the files are `gfopenamigagcc-16.2.0-open5-*.tar.xz`.
+Open1 to open4 keep `OpenAmigaGCC` and `openamigagcc-*`. `lock_release.py` reads which from the release's
+SHA256SUMS; `upgrade.sh` takes the toolchain folder under either name and writes the name into
+`STOVE.json` and `README.txt`; `identity/build-amiga.sh` passes the lock's release under either name (the
+release number is what is pinned). `tests/upgrade/test_names.sh` (no download) proves it on a pretend open4
+and open5 release. To move the stove to open5 once it is published:
+
+```sh
+cd ~/AmiCradle/stoves
+curl -LO https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open5/gfopenamigagcc-16.2.0-open5-x86_64-linux.tar.xz
+curl -LO https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open5/SHA256SUMS
+python3 ~/path/to/amicradle-stoves/os32-gcc16/lock_release.py 16.2.0-open5 SHA256SUMS \
+    gfopenamigagcc-16.2.0-open5-x86_64-linux.tar.xz "$(gh api repos/DalsinAI/gfopengcc/commits/v16.2.0-open5 --jq .sha)"
+# commit the new toolchain.lock in a PR, then the steps below with the open5 file name
+```
 
 On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds;
 `~/AmiCradle` is the folder, or the link to `~/AmigaChrome` on a machine set up before the rename):

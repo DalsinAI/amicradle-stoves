@@ -6,7 +6,7 @@
 # MIT, Copyright (c) 2026 AmiCradle Team.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
-LOCK="$HERE/../toolchain.lock"
+LOCK=${OS32_GCC16_LOCK:-"$HERE/../toolchain.lock"}   # the variable only for tests/upgrade
 STOVE=${STOVE:?STOVE: the stove folder}
 OUT=${OUT:-$HERE/build}
 CC="$STOVE/prefix/bin/m68k-amigaos-gcc"
@@ -17,8 +17,10 @@ echo "compiler: $got"
 if [ -f "$STOVE/STOVE.json" ]; then
     echo "STOVE.json: $(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d.get("compilerArchive") or {}; print(d.get("release"), a.get("name"), a.get("sha256"))' "$STOVE/STOVE.json")"
 fi
+# The release under either name: GFOpenAmigaGCC from open5, OpenAmigaGCC up to open4 (gfopengcc's
+# docs/releases/16.2.0-open5.md). toolchain.lock's identity is the one its release says.
 case "$got" in
-    *"$want"*) echo "identity: $release, as toolchain.lock says" ;;
+    *"$want"*|*"(OpenAmigaGCC $release)"*|*"(GFOpenAmigaGCC $release)"*) echo "identity: $release, as toolchain.lock says" ;;
     *) echo "identity: NOT $release (toolchain.lock wants \"$want\"): this stove needs os32-gcc16/upgrade.sh"; exit 1 ;;
 esac
 mkdir -p "$OUT"
