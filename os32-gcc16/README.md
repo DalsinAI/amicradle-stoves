@@ -57,6 +57,17 @@ python3 ~/path/to/amicradle-stoves/os32-gcc16/lock_release.py 16.2.0-open5 SHA25
 # commit the new toolchain.lock in a PR, then the steps below with the open5 file name
 ```
 
+**GFOpenAmigaGCC 16.2.0-open6 (4 November 2026).** `toolchain.lock` now pins
+[v16.2.0-open6](https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open6) (tag a8526ba1), written by
+`lock_release.py` from the release's SHA256SUMS: `gfopenamigagcc-16.2.0-open6-x86_64-linux.tar.xz`, SHA-256
+`65f284476ec20cdf7851475d91d2c18d77fa6f2a0eb0f844b6ca23dbfa57eaa7`. Open6's m68k-amigaos code is open5's (the
+Cradle stove's since 2 November, never published); the release adds the m68k-aros target, the compiler of
+GFOpenKick's exec, with the late-combine fix (PR123853). On the Cradle machine Team 5 made the next stove with the
+steps below (open6's file name), copied over from the live prefix what upgrade.sh does not carry (the network,
+AHI and CGX headers in `m68k-amigaos/include`: `rsync -a --ignore-existing os32-gcc16/prefix/
+.next/os32-gcc16/prefix/`), and passed `--live-stove` to `os32_stove.py --reapply-kits` (it takes `.next` for
+a live stove).
+
 On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds;
 `~/AmiCradle` is the folder, or the link to `~/AmigaChrome` on a machine set up before the rename):
 
