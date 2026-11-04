@@ -76,6 +76,31 @@ into `STOVE/prefix/bin`, and notes it in the stove's `README.txt`. **Licence:** 
 non-commercial use and not open source; it is a build tool on the Cradle machine only and never goes in a
 release of ours.
 
+**gfopenasm in place of vasm (4 November 2026).** Dale: deploy gfopenasm (DalsinAI/gfopenasm: MIT, clean-room,
+vasm-compatible) into the stoves, replacing vasm. `asm/install-gfopenasm.sh STOVE [TARBALL]` installs the
+static Linux x86-64 `gfasm` from `asm/gfopenasm.lock`'s release, checked by SHA-256 (archive and binary). It goes
+in as `STOVE/prefix/bin/gfasm` and as a copy for each of the lock's `names` (`vasmm68k_mot`), because gfasm takes its
+CPU and syntax from the name it is called by. Before anything changes, every name assembles a small test in hunk,
+hunkexe and bin, by its absolute path. When the vasm 2.0f oracle is present (`ORACLE=`, default
+`~/AmiCradle/stoves/vasm-oracles/2.0f/bin`), the bytes must match it or the install is refused. What the stove had
+under those names is moved to `STOVE/asm-before-gfopenasm-<UTC time>.bak/`, with `README.txt` and `STOVE.json` as
+they were. The stove's `README.txt` and `STOVE.json` (`"assembler"`) then say what is installed.
+`install-gfopenasm.sh --revert STOVE BAK` puts the backup back. `asm/test_install.sh [TARBALL]` tests install and
+revert on a pretend stove (no vasm needed). vasm itself stays only as the comparison oracle in
+[`../vasm-oracles`](../vasm-oracles); `vasm/build-vasm.sh` is kept to rebuild it in a stove if ever needed.
+
+The lock names gfopenasm 1.0.1. 1.0.0's `-Fhunk` objects named their unit by the source path as given on the
+command line, not by the file name alone as vasm does; the oracle check refuses it, and the stove's SDL2 build
+(c2p, assembled by absolute path) would have differed. 1.0.1 fixes it (DalsinAI/gfopenasm#8).
+
+Installed on the Cradle machine on 4 November 2026 (backup `asm-before-gfopenasm-20261104T083954Z.bak`). It was
+proved by building the same set from fresh clones at the same path before and after: the open ROM (gfopenkick
+trial-1m with full30's inputs; exec through aros68k-gcc16's m68k-aros toolchain), the OpenKick boot disk,
+acrtg.card with its boot ROM and the ACStorage autoboot ROM (both `vasmm68k_mot -Fbin`), gfopenrtg's SDL2
+(c2p by `vasmm68k_mot -Fhunk`), elf.library and an AROS 68k hello. All 1,228 output files were the same bytes, apart
+from one linker map that lists gcc's random /tmp names. The aros68k-gcc16 stove has no vasm: its builds
+assemble with GNU as (m68k-aros-as), so it had nothing to replace.
+
 On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds;
 `~/AmiCradle` is the folder, or the link to `~/AmigaChrome` on a machine set up before the rename):
 
