@@ -101,6 +101,16 @@ acrtg.card with its boot ROM and the ACStorage autoboot ROM (both `vasmm68k_mot 
 from one linker map that lists gcc's random /tmp names. The aros68k-gcc16 stove has no vasm: its builds
 assemble with GNU as (m68k-aros-as), so it had nothing to replace.
 
+**Update to gfopenasm 1.1.0 (4 November 2026).** The lock now names 1.1.0 (tag v1.1.0, 551a1ae). In 1.0.x, 68k
+FPU float constants could differ from vasm (`dc.x 1.0/3.0`, the immediate size of `fmove.x #6.0,fp0`, ...): 107 of
+255 float test cases. 1.1.0 computes them in software and matches vasm 2.0f on all of them. No source in the proof
+set has an FPU instruction or a float constant, so the 1.0.1 builds were never affected. Before the lock changed,
+the same proof set was built with 1.1.0 in place of `vasmm68k_mot` (bind-mounted in a private mount namespace,
+so the stove was not touched): all 1,228 files were the same bytes as with 1.0.1 and with vasm, apart from the
+linker map above. An update is the same command as an install: `install-gfopenasm.sh STOVE` moves the gfopenasm
+that was there to a new `.bak`, and `README.txt` and STOVE.json's `"assembler"."replaced"` then say it replaced
+gfopenasm 1.0.1. `test_install.sh` now also tests an update and its revert.
+
 On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds;
 `~/AmiCradle` is the folder, or the link to `~/AmigaChrome` on a machine set up before the rename):
 

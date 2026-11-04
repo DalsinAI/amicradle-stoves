@@ -1,10 +1,10 @@
-# gfopenasm for the os32-gcc16 stove: DalsinAI/gfopenasm's release (MIT, clean-room, vasm-compatible), the
+# gfopenasm for the os32-gcc16 stove: DalsinAI/gfopenasm's release (MIT, open-source, vasm-compatible), the
 # static Linux x86-64 build its release carries. Read by install-gfopenasm.sh.
-version=1.0.1
-tag=v1.0.1
-commit=cb3e12ff5c51f215e4535b7bb40e4ab4289cfac0
-url=https://github.com/DalsinAI/gfopenasm/releases/download/v1.0.1/gfopenasm-1.0.1-linux-x86_64.tar.xz
-sha256=eed9fa18e012654a7e8b7700efb819e2a5f84f8b0cb98627830129db1b9c9854
-gfasm_sha256=788f0ff89d73922911f8819983611001b71c743db04aa56cadab423246d85d81
+version=1.1.0
+tag=v1.1.0
+commit=551a1ae83f6e1a3608e17b8550a1dc2762d68413
+url=https://github.com/DalsinAI/gfopenasm/releases/download/v1.1.0/gfopenasm-1.1.0-linux-x86_64.tar.xz
+sha256=59a4f2f55439821559ba2da33818d3b692a24e6f3346074143f590371e2d1be9
+gfasm_sha256=009b94007bd8a5c3af5e36d4c00db58d9d7030c9188ec785dd88b7311c205873
 # the names the stove's builds call, each a copy of gfasm (it takes its CPU and syntax from its name)
 names=vasmm68k_mot

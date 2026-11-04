@@ -11,7 +11,8 @@
 # with the stove's README.txt and STOVE.json as they were, to STOVE/asm-before-gfopenasm-<UTC time>.bak/.
 # Then each name assembles a small 68k test in hunk, hunkexe and bin; when the vasm 2.0f oracle is
 # there (ORACLE=, default ~/AmiCradle/stoves/vasm-oracles/2.0f/bin) its output must be the same bytes.
-# The stove's README.txt and STOVE.json ("assembler") say what is installed.
+# The stove's README.txt and STOVE.json ("assembler") say what is installed and what it replaced: vasm,
+# or the gfopenasm an earlier install put there (an update is the same command with a newer lock).
 # vasm itself stays in vasm-oracles/ as the comparison oracle (../../vasm-oracles).
 # This script is MIT, Copyright (c) 2026 AmiCradle Team.
 set -eu
@@ -94,9 +95,12 @@ for n in $NAMES; do install -m 755 "$G" "$B/$n"; done
 python3 - "$STOVE" "$(lock version)" "$(lock tag)" "$(lock commit)" "$(lock url)" "$(lock sha256)" "$(lock gfasm_sha256)" "$NAMES" "$BAK" <<'EOF'
 import json, os, re, sys, time
 stove, version, tag, commit, url, sha, gsha, names, bak = sys.argv[1:]
+j = os.path.join(stove, "STOVE.json")
+old = (json.load(open(j)).get("assembler") or {}) if os.path.exists(j) else {}
+replaced = f"gfopenasm {old['version']}" if old.get("name") == "gfopenasm" else "vasm 2.0f (vasmm68k_mot)"
 note = (f"\nAssembler (prefix/bin): gfopenasm {version} (DalsinAI/gfopenasm {tag}, {commit[:7]}, MIT), the static\n"
         f"Linux x86-64 gfasm from {url}\n(SHA-256 {sha}), as gfasm and as {', '.join(names.split())},\n"
-        f"installed by amicradle-stoves os32-gcc16/asm/install-gfopenasm.sh. It replaced vasm 2.0f; what was\n"
+        f"installed by amicradle-stoves os32-gcc16/asm/install-gfopenasm.sh. It replaced {replaced}; what was\n"
         f"there is in {os.path.basename(bak)}/. vasm stays only as the test oracle in stoves/vasm-oracles/.\n")
 r = os.path.join(stove, "README.txt")
 if os.path.exists(r):
@@ -104,12 +108,11 @@ if os.path.exists(r):
     t = re.sub(r"\nvasmm68k_mot \(prefix/bin\): vasm .*?never in a release\.\n", "\n", t, flags=re.S)
     t = re.sub(r"\nAssembler \(prefix/bin\): gfopenasm .*?test oracle in stoves/vasm-oracles/\.\n", "\n", t, flags=re.S)
     open(r, "w").write(t.rstrip("\n") + "\n" + note)
-j = os.path.join(stove, "STOVE.json")
 if os.path.exists(j):
     d = json.load(open(j))
     d["assembler"] = {"name": "gfopenasm", "version": version, "tag": tag, "commit": commit,
                       "archive": url, "sha256": sha, "gfasm_sha256": gsha, "names": ["gfasm"] + names.split(),
-                      "replaced": "vasm 2.0f (vasmm68k_mot)", "backup": os.path.basename(bak),
+                      "replaced": replaced, "backup": os.path.basename(bak),
                       "installed": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()),
                       "by": "amicradle-stoves os32-gcc16/asm/install-gfopenasm.sh"}
     open(j, "w").write(json.dumps(d, indent=2) + "\n")
