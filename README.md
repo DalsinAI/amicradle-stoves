@@ -12,6 +12,10 @@ machine it targets. Built stoves are published as releases.
 | [os4-gcc16](os4-gcc16/) | GCC 16.2.0, binutils 2.47, with our AmigaOS 4 patches | AmigaOS 4.1 PowerPC | Experimental |
 | [rust-m68k](rust-m68k/) | Rust 1.97.0 on LLVM 22.1 with our M68k fixes | 68040, `no_std` (`m68k-unknown-none-elf`) | Experimental |
 
+[vasm-oracles](vasm-oracles/) is not a stove: it builds host vasm 2.0f binaries (m68k, ppc, arm, x86,
+z80, 6502) as black-box oracles for gfopenasm's clean-room tests. vasm is free for non-commercial use
+only: test tools on our machines, never in a release.
+
 All our 68k builds are for the 68040 only, and soft float by default, so one
 program runs on a full 68040 and on an LC/EC040; maths go through the Amiga's
 mathieee libraries, which use the FPU when there is one. Hard float
