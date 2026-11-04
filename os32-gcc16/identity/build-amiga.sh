@@ -18,7 +18,7 @@ if [ -f "$STOVE/STOVE.json" ]; then
     echo "STOVE.json: $(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); a=d.get("compilerArchive") or {}; print(d.get("release"), a.get("name"), a.get("sha256"))' "$STOVE/STOVE.json")"
 fi
 # The release under either name: GFOpenAmigaGCC from open5, OpenAmigaGCC up to open4 (gfopengcc's
-# docs/releases/16.2.0-open5.md). toolchain.lock's identity is the one its release says.
+# docs/releases/16.2.0-open5.md and 16.2.0-open6.md). toolchain.lock's identity is the one its release says.
 case "$got" in
     *"$want"*|*"(OpenAmigaGCC $release)"*|*"(GFOpenAmigaGCC $release)"*) echo "identity: $release, as toolchain.lock says" ;;
     *) echo "identity: NOT $release (toolchain.lock wants \"$want\"): this stove needs os32-gcc16/upgrade.sh"; exit 1 ;;

@@ -1,16 +1,16 @@
-# os32-gcc16's compiler: the GFOpenAmigaGCC release the stove carries (Dale, 1 November 2026: "update it to the
-# latest"). Read by upgrade.sh (which refuses an archive whose SHA-256 isn't the one here) and by
-# identity/build-amiga.sh (which fails on a stove whose compiler doesn't say this release).
-# Release: https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open4 (tag at 6b6d0ced, 30 October 2026);
-# the hashes are the release's own SHA256SUMS, checked against the downloaded toolchain on 1 November 2026.
-release=16.2.0-open4
-identity=(OpenAmigaGCC 16.2.0-open4)
-tag=v16.2.0-open4
-commit=6b6d0ced5a7634e668cebec978386faa02ba2080
-archive=openamigagcc-16.2.0-open4-x86_64-linux.tar.xz
-archive_sha256=495319a2ffd803278f8827cad70074029c7aa9ecbe05d037e8646ba43ab94ab2
-archive_bytes=53333340
-archive_url=https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open4/openamigagcc-16.2.0-open4-x86_64-linux.tar.xz
-source=openamigagcc-16.2.0-open4-src.tar.xz
-source_sha256=b5f06753903eb38eefba07c9c0b4beb7451d9b77408d06ecef22c597cb293e46
-top=openamigagcc-16.2.0-open4-x86_64-linux
+# os32-gcc16's compiler: the GFOpenAmigaGCC release the stove carries. Read by upgrade.sh (which refuses an
+# archive whose SHA-256 isn't the one here) and by identity/build-amiga.sh (which fails on a stove whose
+# compiler doesn't say this release). Written by lock_release.py on 04 November 2026.
+# Release: https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open6 (tag at a8526ba1); the hashes are the release's own SHA256SUMS,
+# checked against the downloaded toolchain.
+release=16.2.0-open6
+identity=(GFOpenAmigaGCC 16.2.0-open6)
+tag=v16.2.0-open6
+commit=a8526ba16554a8269b384aab7177c4b1d499350f
+archive=gfopenamigagcc-16.2.0-open6-x86_64-linux.tar.xz
+archive_sha256=65f284476ec20cdf7851475d91d2c18d77fa6f2a0eb0f844b6ca23dbfa57eaa7
+archive_bytes=53336640
+archive_url=https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open6/gfopenamigagcc-16.2.0-open6-x86_64-linux.tar.xz
+source=gfopenamigagcc-16.2.0-open6-src.tar.xz
+source_sha256=4e6d1b369aee1843b3ade514722a7264efaf4ce21884447d90a815aa459c8a28
+top=gfopenamigagcc-16.2.0-open6-x86_64-linux
