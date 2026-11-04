@@ -68,6 +68,14 @@ AHI and CGX headers in `m68k-amigaos/include`: `rsync -a --ignore-existing os32-
 .next/os32-gcc16/prefix/`), and passed `--live-stove` to `os32_stove.py --reapply-kits` (it takes `.next` for
 a live stove).
 
+**vasm (4 November 2026).** The os32-gcc16 stove had no assembler of vasm's; ports that use one
+(Chocolate Doom) fell back to the os32 stove's. Dale, 4 Nov 01:30: put it in the open6 stove.
+`vasm/build-vasm.sh STOVE [TARBALL]` builds `vasmm68k_mot` from `vasm/vasm.lock`'s release (vasm 2.0f, the
+one os32 carries: m68k backend 2.8c, motorola syntax 3.19f), its authors' own archive checked by SHA-256,
+into `STOVE/prefix/bin`, and notes it in the stove's `README.txt`. **Licence:** vasm is free for
+non-commercial use and not open source; it is a build tool on the Cradle machine only and never goes in a
+release of ours.
+
 On the Cradle machine, to move the stove to open4 (about 2 minutes, plus GFOpenNDK's libamiga builds;
 `~/AmiCradle` is the folder, or the link to `~/AmigaChrome` on a machine set up before the rename):
 
