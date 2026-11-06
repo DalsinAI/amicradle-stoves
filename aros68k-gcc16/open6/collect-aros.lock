@@ -1,0 +1,15 @@
+# AROS's collect-aros at the commit the open6 AROS stove was built from (gfopengcc scripts/aros.lock):
+# file  sha256. Read by make-relocatable.sh, which fetches each from
+# https://raw.githubusercontent.com/aros-development-team/AROS/COMMIT/tools/collect-aros/FILE
+commit c8860e674d7c5fbab304e2bf201f7a9c81c98629
+backend-generic.c 5b42085cf8509d53ed6eb431b71f49264d386ba88d59720f217220d0965b06be
+backend.h 46356e72cb2d0425892c4fad6129a9a0c22d3d5b1b2a786905f109d41d5d4536
+collect-aros.c cf89fd01dc3ef5a7b4dbc27d79a20b24d0df07e97671bbc67ddd2ac6025a6af2
+docommand-exec.c 874d06d0c78fb29dd4bb33034c7a5a67462d53322c4dc335e62ea1beba91ee66
+docommand.h 70c1173325ce4d2c86bf9efb90fefa81a57f459eba0b1428ef59b19a8323395c
+env.h.in 2b292b34e6e6c2bd56c03d848ab299bb188cf01c0466558bcde3a3b6a8e17a15
+gensets.c f4a83629891a1d0b617b34546e4b9b3611af0a4773f86c559e52165bbcef4394
+gensets.h e74e1384e51e2064bde799874a2de3a9d394f55d9dec6425031379fe180fe593
+ldscript.h fb1c92984cfdaca548bca2c374bc26cc21b7ccb818b529716b459d9a420c91df
+misc.c 25081a38728bf05e33e97072dd9a29145d60a412ce8d4833adfd88cc131ab596
+misc.h 85499c78a9ea29d4019a328d4aa99a4175e6f650ad5684f8e52542a9d5a2360f
