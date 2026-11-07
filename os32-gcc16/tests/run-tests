@@ -1,8 +1,8 @@
 ; os32-gcc16 qualification: Execute run-tests from the folder holding bin/.
 ; Writes results/<test>.txt and results/summary.txt (each test's return code).
-; t11-t19 test C++ thread safety. t3 (all the thread pieces together) crashed
-; on 11 Oct with the stock libpthread; t18 ended the shell running it (11 Oct),
-; so it runs last of all.
+; t20 tests libnix's qsort and bsearch. t11-t19 test C++ thread safety. t3 (all
+; the thread pieces together) crashed on 11 Oct with the stock libpthread; t18
+; ended the shell running it (11 Oct), so it runs last of all.
 FailAt 1000
 Stack 1000000
 If NOT EXISTS results
@@ -104,6 +104,11 @@ If EXISTS bin/t10-040
   Echo "t10-040 ..."
   bin/t10-040 >results/t10-040.txt
   Echo "t10-040 rc=$RC" >>results/summary.txt
+EndIf
+If EXISTS bin/t20-040
+  Echo "t20-040 ..."
+  bin/t20-040 >results/t20-040.txt
+  Echo "t20-040 rc=$RC" >>results/summary.txt
 EndIf
 If EXISTS bin/t11-040
   Echo "t11-040 ..."

@@ -16,6 +16,7 @@
     {"run": ["sh", "{recipe}/add-vasm.sh", "{stove}", "{file:vasm@2.0f}"],
      "files": {"vasm@2.0f": "c84b2de1cbb87831795fe64a85c5d9a7002a766e3a7c30b0a2d7d5e99d878f49"},
      "sources": {"vasm@2.0f": {"url": "http://phoenix.owl.de/tags/vasm2_0f.tar.gz"}}},
+    {"run": ["sh", "{recipe}/../libnix/install-qsort.sh", "{stove}"]},
     {"run": ["python3", "{recipe}/stove-json.py", "{stove}"]}
   ]
 }
