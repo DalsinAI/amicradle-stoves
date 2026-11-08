@@ -19,6 +19,9 @@ Every input is checked by its SHA-256 and comes from the stove store
 | `os32-gcc16-open6-extras@1` | `cdc5255d...608be` | `compat/`, `patches/`, `tools/`, `tests/` and the remaining headers |
 | `vasm@2.0f` | `c84b2de1...78f49` | http://phoenix.owl.de/tags/vasm2_0f.tar.gz (`../vasm/vasm.lock`), built by `add-vasm.sh` |
 
+After the parts, `../libnix/install-qsort.sh` replaces libnix's `qsort` in every `libnix.a` with the fixed one
+(`../libnix/qsort.c`, 7 Nov 2026; see `../README.md`, "libnix's qsort"); `STOVE.json` says so under `"libnix"`.
+
 The four parts were made once, on 6 Nov 2026, by `make-parts.py` from the stove
 assembled that day (which had carried them from the retired local open6 build);
 `parts.json` records them. `kits.json` is that stove's kit record, which

@@ -1,6 +1,6 @@
 #!/bin/sh
 # check-results.sh [RESULTS]: judge the results an instance wrote (default results/).
-# t1-t6, t10: the program's own PASS/FAIL lines and return code (0 = right).
+# t1-t6, t10-t20: the program's own PASS/FAIL lines and return code (0 = right).
 # t7-t9: the output must equal expected/ (made on a PC), line for line.
 cd "$(dirname "$0")"; R=${1:-results}; fails=0
 for f in $(cd "$R" && ls *.txt | grep -v summary); do

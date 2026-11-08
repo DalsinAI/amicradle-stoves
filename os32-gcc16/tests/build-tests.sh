@@ -87,3 +87,7 @@ for c in 040 040f; do
     # t10 deliberately WITHOUT -fno-tree-loop-distribute-patterns: it checks the memmove fix
     run "${P}gcc" $CF $COMMON -o bin/t10-$c src/t10_memmove.c && ok bin/t10-$c || bad bin/t10-$c
 done
+# t20: libnix's qsort and bsearch, with libwebp's comparisons (never 0). libnix's own qsort,
+# to open6, never returned or read outside the array: install ../libnix/install-qsort.sh.
+# qemu-libnix/test_qsort.sh runs the same program on the stove's libnix code without an Amiga.
+run "${P}gcc" -m68040 $SOFT $COMMON -o bin/t20-040 src/t20_qsort.c && ok bin/t20-040 || bad bin/t20-040

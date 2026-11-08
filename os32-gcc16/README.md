@@ -130,10 +130,63 @@ archived folder back in place of `os32-gcc16`.
 
 This folder adds broader qualification tests, which need no NDK:
 
-- `tests/`: nineteen programs (and t3's pieces, t3a-t3h) built with `tests/build-tests.sh`, run on an instance
+- `tests/`: twenty programs (and t3's pieces, t3a-t3h) built with `tests/build-tests.sh`, run on an instance
   with `tests/run-tests` and judged with `tests/check-results.sh`. MIT.
 - `tests/qemu-check/`: how upstream GCC 16.2.0 and bebbo's public `amiga16.2`
   were checked on 11 October 2026 without an Amiga, under qemu-m68k. MIT.
+- `tests/qemu-libnix/test_qsort.sh [STOVE]`: t20 on the stove's own libnix `qsort` and `bsearch` machine code
+  under qemu-m68k, no Amiga needed (see "libnix's qsort" below). MIT.
+
+## libnix's qsort (7 November 2026)
+
+libnix's `qsort`, in every GFOpenAmigaGCC release to 16.2.0-open6 (bebbo's libnix `5707d0b`, untouched by
+gfopengcc's patches 0001-0008), never returns, or compares outside the array, when the comparison function never
+returns 0. libwebp's do: its Huffman-tree sort (`huffman_encode_utils.c`, 16-byte nodes, more count first, then
+smaller value) and its palette sort (`palette.c`) both end in `return (a < b) ? -1 : 1;`, so comparing an element
+with itself gives 1. That hung webp.datatype's lossless save (GFOpenDatatypes #32 now links a heap sort of its own).
+
+**Why.** libnix's `qsort` takes the middle element `c` as the pivot and leaves it in the array. Its scan from the
+left, `while (compar(&base[c], &base[a]) > 0) a++;`, stops at the pivot only because `compar(pivot, pivot)` is 0;
+nothing else bounds it. With 1 there, the scan runs past the pivot. When the pivot is the last element of its part
+in sort order, it runs off the end of the part (into the rest of the array, or past the array's end); the scan from
+the right stops at once at the part's last element, so `b + 1 == nmemb`, the part "splits" into all of it and
+nothing, and `while (nmemb > 1)` goes round for ever with nothing changed. Any two elements in the wrong order are
+such a part (`c` is 0 and the one that sorts later is first), so nearly every real sort meets one. In libwebp the
+tree array is followed by the tree pool in the same allocation, so the scan goes on into the pool (and, on an Amiga,
+beyond it without a fault) until some node stops it, and then the loop never ends. With a comparison that returns
+-1 on ties the scan from the right runs below the start of the part instead. A
+comparison that returns 0 for equal elements (`a < b ? -1 : a > b`, as the C standard expects of a total order)
+never shows it, which is why a plain `int` sort worked. It is the C source, not the compiler: the stove's code is
+that source line for line (disassembled), and the source built for a PC fails the same sorts the same way.
+`bsearch` (the only other libnix function that takes a comparison) doesn't depend on `compar(x, x)` and passes.
+
+**Fix.** `libnix/qsort.c` (public domain, as libnix): the pivot goes to the front first, both scans are bounded,
+`compar` never gets one element as both arguments, and after each pass the pivot goes to its own place between the
+two parts, so every pass takes at least one element out. As before it recurses on the smaller part (stack at most
+log2(n) calls deep). `libnix/0009-qsort-…patch` is the same change for gfopengcc's `patches/libnix` (it applies
+on `5707d0b` with or without 0001-0008), so the next release carries it.
+
+**Into a stove.** `libnix/install-qsort.sh [--check-only] STOVE` compiles `qsort.c` with the stove's compiler and
+libnix's own flags for each of its five `libnix.a` (68000, `libm020`, `libb`, `libb/libm020`,
+`libb32/libm020`), replaces `qsort.o` in each (the old ones go to `STOVE/libnix-qsort-before-<time>/`), checks that
+each now has that code, and runs `tests/qemu-libnix/test_qsort.sh` when `m68k-linux-gnu-gcc` and `qemu-m68k` are
+there. A stove under `~/AmiCradle/stoves` needs `LIVE_OK=1` (its `.next/` does not). The open6 recipe runs it.
+
+**Measured** (qemu-m68k 8.2 `-cpu m68040 -one-insn-per-tb`, instructions of one sort with a comparison that
+returns 0 on ties, `libm020` code: the stove's `qsort.o` against `qsort.c` built by the stove the same way; the
+sorted arrays are the same):
+
+| Input | Old: instructions, compar calls | Fixed: instructions, compar calls |
+| --- | ---: | ---: |
+| 1,000 random ints | 389,690, 13,592 | 333,632, 11,248 |
+| 1,000 ints, 16 values | 423,403, 12,743 | 331,056, 10,088 |
+| 1,000 sorted | 259,717, 10,975 | 226,701, 8,498 |
+| 1,000 reversed | 275,798, 10,976 | 251,988, 8,837 |
+| 1,000 all the same | 448,693, 11,862 | 321,711, 8,098 |
+| 10,000 random ints | 5,126,180, 185,279 | 4,350,070, 150,688 |
+| 280 Huffman nodes, 8 counts | 132,974, 3,549 | 119,090, 2,725 |
+
+The code is 328 bytes in place of 296 (`libm020`).
 
 ## What the 11 October checks showed
 
@@ -200,6 +253,7 @@ every build passes `-m68040`.
 | t17 | `condition_variable_any` with `mutex`, `shared_mutex` and a lock of its own; `wait_for` timing out | 040 |
 | t18 | `ostringstream`/`istringstream` (ints, hex, doubles) in 8 threads; `cout` from several threads | 040 |
 | t19 | 1,150 short threads: one after another, in batches, detached, `async`; `thread_local` destructors | 040 |
+| t20 | `qsort` with libwebp's Huffman-tree and palette comparisons (never 0); elements of 1 to 33 bytes, many ties, sorted, reversed, all the same; comparisons that never return 0 or answer at random (must end, stay inside and keep every element); `bsearch` | 040 |
 | t12c, t13c, t19c | t12, t13 and t19 built with `-fuse-cxa-atexit` (and `src/cxa_dso.c` for `__dso_handle`), so that `thread_local` destructors are registered | 040 |
 
 ## What the tests show on AmigaOS (lab of Instance-32, 12 October)

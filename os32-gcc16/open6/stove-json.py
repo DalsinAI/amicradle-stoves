@@ -21,8 +21,11 @@ d = {
     "parts": [s["part"] + " " + s["sha256"] for s in r["steps"] if "part" in s],
     "vasm": "vasmm68k_mot and vobjdump 2.0f in prefix/bin, built from vasm2_0f.tar.gz "
             "(c84b2de1...); free for non-commercial use: never in a release",
+    "libnix": "qsort.o in every libnix.a replaced by amicradle-stoves os32-gcc16/libnix/qsort.c "
+              "(install-qsort.sh, 7 Nov 2026): libnix's own never returned, or read outside the array, "
+              "when the comparison function never returns 0 (libwebp's sorts)",
     "how": "prefix = the release archive; NDK 3.2, the open NDK, port-deps, the GPU kits and the "
            "stove's own extras from the store's parts (made once from the 6 Nov 2026 stove by "
-           "make-parts.py); vasm built from source; no link leaves the stove",
+           "make-parts.py); vasm built from source; libnix's qsort fixed; no link leaves the stove",
 }
 (stove / "STOVE.json").write_text(json.dumps(d, indent=2) + "\n")
