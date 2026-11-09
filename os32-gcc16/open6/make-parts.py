@@ -4,6 +4,7 @@ gfopengcc v16.2.0-open6 release archive, packed as small archives of their own i
 the stove store, so recipe.json never needs an older stove.
 
     python3 make-parts.py STOVE RELEASE-TARBALL [--store DIR] [--version 1]
+    python3 make-parts.py STOVE RELEASE-TARBALL --only kits --version 2 --from TEXT [--store DIR]
 
 STOVE is the assembled open6 stove (the 6 Nov 2026 one, which carried these files
 from the retired local open6 build); RELEASE-TARBALL the release archive. Every
@@ -19,6 +20,11 @@ file under STOVE that the release lacks goes into one part, by where it lives:
 
 Each part is packed with amicradle-ci stove pack --kind part; parts.json (here)
 records name, version, SHA-256 and file count, which recipe.json pins.
+
+--only GROUP packs that one part again (a new --version) from a stove that has
+changed only there, e.g. a kit swapped by os32_stove.py --kit, and replaces
+that part's entry in parts.json, keeping the others; --from says which stove.
+kits/replaced-*/ (the kit installer's backups) are never packed.
 MIT, Copyright (c) 2026 AmiCradle Team.
 """
 import argparse
@@ -40,7 +46,7 @@ def group(rel: str, kit_files: set[str]) -> str:
     if top in ("ndk", "OPENNDK.json"):
         return "ndk"
     if top == "kits":
-        return "kits"
+        return "skip" if rel.split("/")[1].startswith("replaced-") else "kits"
     if top in ("compat", "patches", "tools", "tests", "README.txt"):
         return "extras"
     p = rel[len("prefix/"):]
@@ -59,6 +65,8 @@ def main() -> int:
     ap.add_argument("release")
     ap.add_argument("--store")
     ap.add_argument("--version", default="1")
+    ap.add_argument("--only", choices=("ndk", "port-deps", "kits", "extras"))
+    ap.add_argument("--from", dest="from_", default="the os32-gcc16 open6 stove assembled 6 Nov 2026 on amigachromebuild")
     ap.add_argument("--tool", default=os.environ.get("AMICRADLE_CI", "amicradle-ci"))
     a = ap.parse_args()
     stove = Path(a.stove).resolve()
@@ -81,9 +89,16 @@ def main() -> int:
         if rel.startswith("prefix/") and rel[len("prefix/"):] in release:
             continue
         groups.setdefault(group(rel, kit_files), []).append(rel)
-    out = {"schema": 1, "from": "the os32-gcc16 open6 stove assembled 6 Nov 2026 on amigachromebuild",
-           "release": Path(a.release).name, "left_out": skipped, "parts": []}
+    groups.pop("skip", None)
+    old = json.loads((HERE / "parts.json").read_text()) if a.only else None
+    out = {"schema": 1, "from": a.from_, "release": Path(a.release).name, "left_out": skipped, "parts": []}
+    if old:
+        out = dict(old)
+        out["parts"] = [p for p in old["parts"] if not p["part"].startswith(f"os32-gcc16-open6-{a.only}@")]
+        out.setdefault("remade", []).append({"part": f"os32-gcc16-open6-{a.only}@{a.version}", "from": a.from_})
     for g, files in sorted(groups.items()):
+        if a.only and g != a.only:
+            continue
         with tempfile.TemporaryDirectory() as td:
             for rel in files:
                 q = Path(td) / rel
@@ -95,7 +110,7 @@ def main() -> int:
                     shutil.copy2(src, q)
             name = f"os32-gcc16-open6-{g}"
             src_note = json.dumps({"made_by": "amicradle-stoves os32-gcc16/open6/make-parts.py",
-                                   "from": out["from"], "group": g})
+                                   "from": a.from_, "group": g})
             subprocess.run([sys.executable, a.tool, "stove", "pack", td, "--name", name, "--version", a.version,
                             "--kind", "part", "--source", src_note, "--replace"]
                            + (["--store", a.store] if a.store else []), check=True)

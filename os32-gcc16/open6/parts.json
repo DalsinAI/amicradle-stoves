@@ -14,12 +14,6 @@
       "size": 149295
     },
     {
-      "part": "os32-gcc16-open6-kits@1",
-      "sha256": "a036df9e874af21b90ddba9b51034346d73d5d212dffb520ef9ccadfb486bdde",
-      "files": 279,
-      "size": 6928112
-    },
-    {
       "part": "os32-gcc16-open6-ndk@1",
       "sha256": "ad5392a8be502e02dc1b8127687e84a2363885d1a9b9d6ed866f4da101d56126",
       "files": 4508,
@@ -30,6 +24,18 @@
       "sha256": "957086c46ff1da51dc320ec88701022874d3f938aaae1f9de68154d13b20d0f3",
       "files": 114,
       "size": 799727
+    },
+    {
+      "part": "os32-gcc16-open6-kits@2",
+      "sha256": "11d540f56d895bca1adce4d859db88f693bb4d4559ef48e0ed99e75d3d92b558",
+      "files": 282,
+      "size": 6965564
+    }
+  ],
+  "remade": [
+    {
+      "part": "os32-gcc16-open6-kits@2",
+      "from": "the os32-gcc16 open6 stove assembled 9 Nov 2026 from recipe.json (kits@1), with GFOpenGPU-SDK 0.8.1 put in by os32_stove.py --kit and 0.8's MiniGL files taken out (kits/gfopengpu-minigl30.sh)"
     }
   ]
 }

@@ -15,7 +15,7 @@ Every input is checked by its SHA-256 and comes from the stove store
 | `gfopenamigagcc@16.2.0-open6` | `65f28447...57eaa7` | gfopengcc release v16.2.0-open6, x86-64 archive, as published (also fetched from the release with `gh` when the store lacks it) |
 | `os32-gcc16-open6-ndk@1` | `ad5392a8...56126` | NDK 3.2 and the open NDK (`ndk/`, `OPENNDK.json`, `prefix/m68k-amigaos/ndk*`, `openndk-fd`) |
 | `os32-gcc16-open6-port-deps@1` | `957086c4...0d0f3` | `prefix/m68k-amigaos/port-deps` (its `manifest.json` gives each file's SHA-256 and origin) |
-| `os32-gcc16-open6-kits@1` | `a036df9e...bdde` | the OpenGPU 0.6/0.7 and GFOpenGPU 0.8 kits: `kits/` and every file their `*.files` lists name |
+| `os32-gcc16-open6-kits@2` | `11d540f5...b558` | the OpenGPU 0.6/0.7 and GFOpenGPU 0.8.1 kits: `kits/` and every file their `*.files` lists name (kits@1, `a036df9e...bdde`, had GFOpenGPU 0.8) |
 | `os32-gcc16-open6-extras@1` | `cdc5255d...608be` | `compat/`, `patches/`, `tools/`, `tests/` and the remaining headers |
 | `vasm@2.0f` | `c84b2de1...78f49` | http://phoenix.owl.de/tags/vasm2_0f.tar.gz (`../vasm/vasm.lock`), built by `add-vasm.sh` |
 
@@ -32,6 +32,14 @@ added `prefix/bin/vasmm68k_mot` and `prefix/bin/vobjdump` (game ports assemble
 with them; amigachocolatedoom found vasm only in the deprecated os32 stove beside
 it); `STOVE.json` rewritten (the recipe and parts instead of a time stamp); the
 kit installer's backups `kits/replaced-*` left out.
+
+kits@2 (9 Nov 2026): GFOpenGPU-SDK 0.8.1, which is 0.8 with minigl.library 30's
+clean-room interface (gfopenrtg ed6b41d, #221) in place of version 29's, made by
+`../kits/gfopengpu-minigl30.sh` and put in with amicradle's `scripts/os32_stove.py
+--kit`; 0.8's MiniGL files that 30 has no file for (`mgl/context.h`, `mgl/minigl.h`,
+`mgl/modes.h`) were taken out, not kept beside the new ones. The part was packed by
+`make-parts.py --only kits --version 2` from that stove; the other parts are
+unchanged.
 
 vasm is free for non-commercial use, not open source: the store is on our LAN;
 never put this stove, or its archive, in a release.
