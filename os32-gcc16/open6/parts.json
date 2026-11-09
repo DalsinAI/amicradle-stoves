@@ -30,12 +30,22 @@
       "sha256": "11d540f56d895bca1adce4d859db88f693bb4d4559ef48e0ed99e75d3d92b558",
       "files": 282,
       "size": 6965564
+    },
+    {
+      "part": "os32-gcc16-open6-opensdk@1",
+      "sha256": "f25f749076bdfe1960bdf399bf5fb62534f63b703d4b826ad1deae48fd8490c3",
+      "files": 201,
+      "size": 589410
     }
   ],
   "remade": [
     {
       "part": "os32-gcc16-open6-kits@2",
       "from": "the os32-gcc16 open6 stove assembled 9 Nov 2026 from recipe.json (kits@1), with GFOpenGPU-SDK 0.8.1 put in by os32_stove.py --kit and 0.8's MiniGL files taken out (kits/gfopengpu-minigl30.sh)"
+    },
+    {
+      "part": "os32-gcc16-open6-opensdk@1",
+      "from": "the os32-gcc16 open6 stove with kits@2, and GFOpenSDK 0.2.91 (the Open SDK 0.3's first pre-release, gfopensdk team5/sdk-mitchy-akikoplus-20261109 c18f0e9) put in by os32_stove.py --kit from kits/opensdk-kit.sh"
     }
   ]
 }

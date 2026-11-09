@@ -16,6 +16,7 @@ Every input is checked by its SHA-256 and comes from the stove store
 | `os32-gcc16-open6-ndk@1` | `ad5392a8...56126` | NDK 3.2 and the open NDK (`ndk/`, `OPENNDK.json`, `prefix/m68k-amigaos/ndk*`, `openndk-fd`) |
 | `os32-gcc16-open6-port-deps@1` | `957086c4...0d0f3` | `prefix/m68k-amigaos/port-deps` (its `manifest.json` gives each file's SHA-256 and origin) |
 | `os32-gcc16-open6-kits@2` | `11d540f5...b558` | the OpenGPU 0.6/0.7 and GFOpenGPU 0.8.1 kits: `kits/` and every file their `*.files` lists name (kits@1, `a036df9e...bdde`, had GFOpenGPU 0.8) |
+| `os32-gcc16-open6-opensdk@1` | `f25f7490...90c3` | the Open SDK as a kit, GFOpenSDK 0.2.91 (0.3's first pre-release: mitchy.library and akikoplus.library, pinned at their unmerged branches): `kits/GFOpenSDK-*` and every file `kits/GFOpenSDK-0.2.91.files` names; its step replaces the two gfopengpu headers the GPU kit has older |
 | `os32-gcc16-open6-extras@1` | `cdc5255d...608be` | `compat/`, `patches/`, `tools/`, `tests/` and the remaining headers |
 | `vasm@2.0f` | `c84b2de1...78f49` | http://phoenix.owl.de/tags/vasm2_0f.tar.gz (`../vasm/vasm.lock`), built by `add-vasm.sh` |
 
@@ -40,6 +41,14 @@ clean-room interface (gfopenrtg ed6b41d, #221) in place of version 29's, made by
 `mgl/modes.h`) were taken out, not kept beside the new ones. The part was packed by
 `make-parts.py --only kits --version 2` from that stove; the other parts are
 unchanged.
+
+opensdk@1 (9 Nov 2026): the Open SDK (DalsinAI/gfopensdk) as a kit, made by
+`../kits/opensdk-kit.sh` and put in with `os32_stove.py --kit`: every Open library's
+headers in `prefix/m68k-amigaos/include` (searched after the NDK, so OpenNDK still
+wins for the OS's own), `libopensdk.a` and the soft-float specs in
+`prefix/m68k-amigaos/lib`, the docs, FD/SFD, examples and templates in
+`prefix/m68k-amigaos/share/GFOpenSDK/`. A program then needs no `-I` for
+`<proto/mitchy.h>` and the rest. Packed by `make-parts.py --only opensdk`.
 
 vasm is free for non-commercial use, not open source: the store is on our LAN;
 never put this stove, or its archive, in a release.

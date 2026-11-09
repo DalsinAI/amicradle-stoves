@@ -24,7 +24,7 @@ d = {
     "libnix": "qsort.o in every libnix.a replaced by amicradle-stoves os32-gcc16/libnix/qsort.c "
               "(install-qsort.sh, 7 Nov 2026): libnix's own never returned, or read outside the array, "
               "when the comparison function never returns 0 (libwebp's sorts)",
-    "how": "prefix = the release archive; NDK 3.2, the open NDK, port-deps, the GPU kits and the "
+    "how": "prefix = the release archive; NDK 3.2, the open NDK, port-deps, the GPU kits, the Open SDK kit and the "
            "stove's own extras from the store's parts (made once from the 6 Nov 2026 stove by "
            "make-parts.py); vasm built from source; libnix's qsort fixed; no link leaves the stove",
 }
