@@ -12,6 +12,7 @@
     {"part": "os32-gcc16-open6-ndk@1", "sha256": "ad5392a8be502e02dc1b8127687e84a2363885d1a9b9d6ed866f4da101d56126"},
     {"part": "os32-gcc16-open6-port-deps@1", "sha256": "957086c46ff1da51dc320ec88701022874d3f938aaae1f9de68154d13b20d0f3"},
     {"part": "os32-gcc16-open6-kits@2", "sha256": "11d540f56d895bca1adce4d859db88f693bb4d4559ef48e0ed99e75d3d92b558"},
+    {"part": "os32-gcc16-open6-opensdk@1", "sha256": "f25f749076bdfe1960bdf399bf5fb62534f63b703d4b826ad1deae48fd8490c3", "replace": true},
     {"part": "os32-gcc16-open6-extras@1", "sha256": "cdc5255d1ea3960692e1612d4988a0d946f666246233c8392c8fc80c563608be"},
     {"run": ["sh", "{recipe}/add-vasm.sh", "{stove}", "{file:vasm@2.0f}"],
      "files": {"vasm@2.0f": "c84b2de1cbb87831795fe64a85c5d9a7002a766e3a7c30b0a2d7d5e99d878f49"},

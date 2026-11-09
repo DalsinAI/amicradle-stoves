@@ -30,5 +30,18 @@
       "m68k-amigaos/lib/libminigl.a"
     ],
     "archive": "kits/GFOpenGPU-SDK-0.8.1.tar.gz"
+  },
+  {
+    "name": "GFOpenSDK",
+    "version": "0.2.91",
+    "folder": "GFOpenSDK-0.2.91",
+    "sha256": "3f7ff214ff058ef894d27825b783e709f5e652cedbfd0ac5b3d3dc2e25d8cc83",
+    "installed": "20261109T141546Z",
+    "files": 199,
+    "replaced": [
+      "m68k-amigaos/include/gfopengpu/build.h",
+      "m68k-amigaos/include/gfopengpu/stream.h"
+    ],
+    "archive": "kits/GFOpenSDK-0.2.91.tar.gz"
   }
 ]

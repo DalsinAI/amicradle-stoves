@@ -16,6 +16,10 @@ file under STOVE that the release lacks goes into one part, by where it lives:
             records each file's SHA-256 and where it was taken from)
   kits      the OpenGPU 0.6/0.7 and GFOpenGPU 0.8 kits: kits/ (their archives and
             file lists) and every file a kits/*.files list names
+  opensdk   the Open SDK kit (kits/opensdk-kit.sh): kits/GFOpenSDK-*, and every
+            file kits/GFOpenSDK-*.files names (kept apart from the GPU kits, as
+            it moves with every SDK release; its recipe step replaces the two
+            gfopengpu headers it shares with the GPU kit, newer in the SDK)
   extras    the rest: compat/, patches/, tools/, tests/ and the remaining headers
 
 Each part is packed with amicradle-ci stove pack --kind part; parts.json (here)
@@ -41,8 +45,13 @@ HERE = Path(__file__).resolve().parent
 SKIP = ("STOVE.json", "STOVE-MANIFEST.json", ".amicradle-fetched.json")
 
 
-def group(rel: str, kit_files: set[str]) -> str:
+def group(rel: str, kit_files: set[str], sdk_files: set[str] = frozenset()) -> str:
     top = rel.split("/", 1)[0]
+    if top == "kits" and rel.split("/")[1].startswith("GFOpenSDK-"):
+        return "opensdk"
+    if rel.startswith("prefix/") and (rel[len("prefix/"):] in sdk_files
+                                      or rel.startswith("prefix/m68k-amigaos/share/GFOpenSDK/")):
+        return "opensdk"
     if top in ("ndk", "OPENNDK.json"):
         return "ndk"
     if top == "kits":
@@ -65,7 +74,7 @@ def main() -> int:
     ap.add_argument("release")
     ap.add_argument("--store")
     ap.add_argument("--version", default="1")
-    ap.add_argument("--only", choices=("ndk", "port-deps", "kits", "extras"))
+    ap.add_argument("--only", choices=("ndk", "port-deps", "kits", "opensdk", "extras"))
     ap.add_argument("--from", dest="from_", default="the os32-gcc16 open6 stove assembled 6 Nov 2026 on amigachromebuild")
     ap.add_argument("--tool", default=os.environ.get("AMICRADLE_CI", "amicradle-ci"))
     a = ap.parse_args()
@@ -74,9 +83,10 @@ def main() -> int:
         names = tf.getnames()
     top = names[0].split("/", 1)[0]
     release = {n[len(top) + 1:] for n in names if n.startswith(top + "/")}
-    kit_files = set()
+    kit_files, sdk_files = set(), set()
     for f in (stove / "kits").glob("*.files"):
-        kit_files |= {l.strip() for l in f.read_text().splitlines() if l.strip()}
+        into = sdk_files if f.name.startswith("GFOpenSDK-") else kit_files
+        into |= {l.strip() for l in f.read_text().splitlines() if l.strip()}
     sys.path.insert(0, str(Path(a.tool).resolve().parent))
     from amicradle_ci import store as st  # the same walk (and exclusions) pack uses
     items, skipped = st.walk(stove, [])
@@ -88,7 +98,7 @@ def main() -> int:
             continue
         if rel.startswith("prefix/") and rel[len("prefix/"):] in release:
             continue
-        groups.setdefault(group(rel, kit_files), []).append(rel)
+        groups.setdefault(group(rel, kit_files, sdk_files), []).append(rel)
     groups.pop("skip", None)
     old = json.loads((HERE / "parts.json").read_text()) if a.only else None
     out = {"schema": 1, "from": a.from_, "release": Path(a.release).name, "left_out": skipped, "parts": []}
