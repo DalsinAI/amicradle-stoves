@@ -50,7 +50,7 @@ Headers in the stove's include folder, libopensdk.a and the soft-float
 specs in its lib folder, the rest here. Made by amicradle-stoves
 os32-gcc16/kits/opensdk-kit.sh with $("$STOVE/prefix/bin/m68k-amigaos-gcc" --version | head -1).
 EOF
-( cd "$K" && find . -type f | LC_ALL=C sort | sed 's|^\./||' | xargs sha256sum > SHA256SUMS )
+( cd "$K" && find . -type f ! -name SHA256SUMS | LC_ALL=C sort | sed 's|^\./||' | xargs sha256sum > SHA256SUMS )
 when=$(git -C "$SDK" log -1 --format=%ct)
 mkdir -p "$OUT"
 tar --sort=name --owner=0 --group=0 --numeric-owner --mtime="@$when" -C "$tmp" -cf - "GFOpenSDK-$VER" | gzip -n -9 > "$OUT/GFOpenSDK-$VER.tar.gz"
