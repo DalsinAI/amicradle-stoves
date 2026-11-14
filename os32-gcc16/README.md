@@ -68,6 +68,15 @@ AHI and CGX headers in `m68k-amigaos/include`: `rsync -a --ignore-existing os32-
 .next/os32-gcc16/prefix/`), and passed `--live-stove` to `os32_stove.py --reapply-kits` (it takes `.next` for
 a live stove).
 
+**GFOpenAmigaGCC 16.2.0-open8 (14 November 2026).** `toolchain.lock` now pins
+[v16.2.0-open8](https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open8) (tag 5d3bea4b), written by
+`lock_release.py` from the release's SHA256SUMS: `gfopenamigagcc-16.2.0-open8-x86_64-linux.tar.xz`, SHA-256
+`4855915429d8d623037af5aa911b2c3dd6b3ae98eb557eb22c4e76c4fbacf31b`. Open8 is open7 with GCC patch 0019: the
+fold-mem-offsets pass no longer takes a memory-to-memory move as a fold root, which at `-O2 -m68040`/`-m68060`
+deleted an address add and left a store 8 bytes early. Made on the Cradle machine with the open6 steps above, and
+the live open6 specs file's `*gfmalloc:` and `*lib_libnix:` blocks appended to open8's (the release has no
+gfmalloc). The open6 stove is kept beside it as `os32-gcc16-open6-kept-20261114`.
+
 **vasm (4 November 2026).** The os32-gcc16 stove had no assembler of vasm's; ports that use one
 (Chocolate Doom) fell back to the os32 stove's. Dale, 4 Nov 01:30: put it in the open6 stove.
 `vasm/build-vasm.sh STOVE [TARBALL]` builds `vasmm68k_mot` from `vasm/vasm.lock`'s release (vasm 2.0f, the
