@@ -17,3 +17,6 @@ release.
 
 The Cradle machine's live open8 stove (14 Nov 2026) was made by `upgrade.sh` from the live open6 stove
 instead (../README.md); this recipe is the store's way to the same compiler.
+
+vasm is free for non-commercial use, not open source: the store is on our LAN;
+never put this stove, or its archive, in a release.
