@@ -52,3 +52,10 @@ wins for the OS's own), `libopensdk.a` and the soft-float specs in
 
 vasm is free for non-commercial use, not open source: the store is on our LAN;
 never put this stove, or its archive, in a release.
+
+GLU kit (proposed, not installed yet): `../kits/gfopengpu-glu.sh` packs
+gfopenrtg's GLU 9.0.3 and GLUT (library/modules/glu and glut, built with this
+stove by gfopenrtg's `tests/glut/build-amiga.sh`) as `GFOpenGPU-GLU-9.0.3`,
+for `os32_stove.py --kit` and a `kits@3` part. GFOpenGPU-SDK 0.8.1 was packed
+without them, so the stove has only TinyGL's `tgl/glu.h`. Host test:
+`sh ../kits/tests/test-gfopengpu-glu.sh`.
