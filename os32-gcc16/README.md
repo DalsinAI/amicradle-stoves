@@ -68,6 +68,14 @@ AHI and CGX headers in `m68k-amigaos/include`: `rsync -a --ignore-existing os32-
 .next/os32-gcc16/prefix/`), and passed `--live-stove` to `os32_stove.py --reapply-kits` (it takes `.next` for
 a live stove).
 
+**GFOpenAmigaGCC 16.2.0-open9 RC1 (18 November 2026).** `toolchain.lock` pins the release candidate
+[v16.2.0-open9-rc1](https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open9-rc1) (tag a56f9ed8, written
+by `lock_release.py --tag v16.2.0-open9-rc1`): `gfopenamigagcc-16.2.0-open9-x86_64-linux.tar.xz`, SHA-256
+`311d4f73...db19a`. open9 is open8 with libpthread's `pthread_cond_signal` fix and libstdc++'s
+`std::stoll`/`stoull`/`stold`. `install-release.sh HOST STOVES APP [--swap]` puts it in on a machine, every step
+below in one go, and keeps the open8 stove beside it as `os32-gcc16-16.2.0-open8-kept-<date>`. Programs to build
+again on it: `rebuild/` (README there).
+
 **GFOpenAmigaGCC 16.2.0-open8 (14 November 2026).** `toolchain.lock` now pins
 [v16.2.0-open8](https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open8) (tag 5d3bea4b), written by
 `lock_release.py` from the release's SHA256SUMS: `gfopenamigagcc-16.2.0-open8-x86_64-linux.tar.xz`, SHA-256
