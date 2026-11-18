@@ -61,8 +61,8 @@ SPECS=prefix/lib/gcc/m68k-amigaos/16.2.0b/specs
 
 echo "== 4. kits and OpenNDK"
 python3 "$OS32" --reapply-kits --live-stove --stoves "$STOVES/.next" --stove os32-gcc16   # .next is under STOVES
-NDKCO="$STOVES/openndk/OpenNDK"                          # daletop's checkout; else stove_openndk.py's own default
-if [ -d "$NDKCO" ]; then python3 "$NDK" --checkout "$NDKCO" use "$NEXT"; else python3 "$NDK" use "$NEXT"; fi
+NDKCO="$STOVES/openndk"                          # daletop's checkout; else stove_openndk.py's own default
+if [ -d "$NDKCO/OpenNDK" ]; then python3 "$NDK" --checkout "$NDKCO" use "$NEXT"; else python3 "$NDK" use "$NEXT"; fi
 
 echo "== 5. checks"
 OS32_GCC16_LOCK="$LOCK" STOVE="$NEXT" OUT="$STOVES/.next/identity-out" sh "$HERE/identity/build-amiga.sh"
