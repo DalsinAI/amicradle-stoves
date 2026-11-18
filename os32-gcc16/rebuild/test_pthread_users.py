@@ -93,6 +93,19 @@ class Lists(Tmp):
         self.assertEqual(pu.users(got), ["a", "b", "e", "h"])
         self.assertEqual(pu.users(got, "fmo", fixed="2026-11-01T00:00:00Z"), [])
         self.assertFalse(p.with_suffix(".tsv.part").exists())
+        late_old = [["i", "v8", "no", "", new, "yes", "yes"], ["j", "v9", "no", "", new, "yes", "no"]]
+        self.assertEqual(pu.users(late_old, "fmo"), ["i"])               # built on a named open6 stove
+
+    def test_names_old_stove(self):
+        for t in ("native os32-gcc16-open6 build", "GFOpenAmigaGCC 16.2.0-open7", "built on open6."):
+            self.assertTrue(pu.names_old_stove(t), t)
+        for t in ("built on open8", "open60 things", "reopen6", "16.2.0-open9", ""):
+            self.assertFalse(pu.names_old_stove(t), t)
+
+    def test_release_ref(self):
+        self.assertEqual(pu.release_ref(["r", "v1.0-rc1", "yes"]), "refs/tags/v1.0-rc1")
+        self.assertEqual(pu.release_ref(["r", "", "no-release"]), "HEAD")
+        self.assertEqual(pu.release_ref(None), "HEAD")
 
     def test_missing_file_is_empty(self):
         self.assertEqual(pu.read_tsv(self.t / "none.tsv"), [])

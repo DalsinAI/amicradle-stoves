@@ -38,6 +38,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -139,11 +140,13 @@ def write_tsv(path: Path, header: str, rows: list[list[str]]) -> None:
 
 def users(list_rows: list[list[str]], why: str = "both", fixed: str = FMO_FIXED) -> list[str]:
     """The repos to rebuild, in the list's order. why "pthread": the scan found libpthread in their release;
-    "fmo": their release has AmigaOS programs and was published before open8 (fixed); "both": either."""
+    "fmo": their release has AmigaOS programs and was published before open8 (fixed) or its notes name open6 or
+    open7; "both": either."""
     out = []
     for r in list_rows:
         pt = len(r) > 2 and r[2] == "yes"
-        fmo = len(r) > 5 and r[5] == "yes" and r[4] != "" and r[4] < fixed
+        old = (len(r) > 4 and r[4] != "" and r[4] < fixed) or (len(r) > 6 and r[6] == "yes")
+        fmo = len(r) > 5 and r[5] == "yes" and old
         if (why in ("pthread", "both") and pt) or (why in ("fmo", "both") and fmo):
             out.append(r[0])
     return out
@@ -202,7 +205,13 @@ def newest_release(owner: str, repo: str):
     if not rel:
         return None
     return (rel[0]["tag_name"], [a["name"] for a in rel[0].get("assets", [])],
-            rel[0].get("published_at") or rel[0].get("created_at") or "")
+            rel[0].get("published_at") or rel[0].get("created_at") or "", rel[0].get("body") or "")
+
+
+def names_old_stove(notes: str) -> bool:
+    """The release's notes say it was built on open6 or open7 (a named old stove stays on the machines, so a
+    release published after open8 can still have been built on one)."""
+    return re.search(r"(?<![\w.])(?:16\.2\.0-)?open[67](?![\w])", notes) is not None
 
 
 def scan(a) -> int:
@@ -219,7 +228,7 @@ def scan(a) -> int:
         if rel is None:
             rows.append([repo, "", "no-release", "", "", ""])
         else:
-            tag, assets, published = rel
+            tag, assets, published, notes = rel
             arcs = [n for n in assets if is_archive(n)]
             with tempfile.TemporaryDirectory(dir=work) as tmp:
                 t = Path(tmp)
@@ -234,27 +243,37 @@ def scan(a) -> int:
                         (t / "dl" / n).unlink(missing_ok=True)
                         shutil.rmtree(t / "x" / n, ignore_errors=True)
                     rows.append([repo, tag, "yes" if hits else "no", " ".join(hits), published,
-                                 "yes" if progs else "no"])
+                                 "yes" if progs else "no", "yes" if names_old_stove(notes) else "no"])
                 except Exception as e:  # one repo's trouble never stops the scan
                     rows.append([repo, tag, "error", str(e)[:200], published, ""])
         print(f"[{i}/{len(names)}] {repo}: {rows[-1][2]}", flush=True)
-        write_tsv(out, "repo\ttag\tcarries libpthread\tfiles\tpublished\thas AmigaOS programs", rows)
+        write_tsv(out, "repo\ttag\tcarries libpthread\tfiles\tpublished\thas AmigaOS programs\tnotes name open6/7", rows)
     print(f"{len(users(rows, 'pthread'))} of {len(rows)} repos carry libpthread; "
           f"{len(users(rows, 'fmo'))} have AmigaOS programs released before open8 ({FMO_FIXED}); "
           f"{len(users(rows))} to rebuild in all: {out}")
     return 0
 
 
-def _fetch(owner: str, repo: str, clone: Path, lf) -> int:
-    """Clones repo (depth 1), or brings an earlier clone to the remote's head; output into lf."""
+def _fetch(owner: str, repo: str, clone: Path, lf, ref: str = "HEAD") -> int:
+    """Clones repo (depth 1) if it isn't there, then puts the clone at ref (the release's tag, refs/tags/T, or
+    the default branch's HEAD) with nothing left of an earlier build; output into lf."""
     def run(cmd):
         lf.write("$ " + " ".join(cmd) + "\n"); lf.flush()
         return subprocess.run(cmd, stdout=lf, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL).returncode
-    if (clone / ".git").is_dir():
-        return run(["git", "-C", str(clone), "fetch", "-q", "--depth", "1", "origin", "HEAD"]) or \
-            run(["git", "-C", str(clone), "reset", "-q", "--hard", "FETCH_HEAD"]) or \
-            run(["git", "-C", str(clone), "clean", "-qfdx"])
-    return run(["gh", "repo", "clone", f"{owner}/{repo}", str(clone), "--", "-q", "--depth", "1"])
+    if not (clone / ".git").is_dir():
+        rc = run(["gh", "repo", "clone", f"{owner}/{repo}", str(clone), "--", "-q", "--depth", "1"])
+        if rc:
+            return rc
+    return run(["git", "-C", str(clone), "fetch", "-q", "--depth", "1", "origin", ref]) or \
+        run(["git", "-C", str(clone), "reset", "-q", "--hard", "FETCH_HEAD"]) or \
+        run(["git", "-C", str(clone), "clean", "-qfdx"])
+
+
+def release_ref(row: list[str] | None) -> str:
+    """What to build: the scanned release's tag (what shipped, often on a branch not yet merged), else HEAD."""
+    if row and len(row) > 1 and row[1]:
+        return "refs/tags/" + row[1]
+    return "HEAD"
 
 
 def rebuild(a) -> int:
@@ -263,7 +282,9 @@ def rebuild(a) -> int:
     if not stove_id:
         print(f"{stove}: not a stove (no STOVE.json release, no prefix/bin/m68k-amigaos-gcc)")
         return 2
-    repos = a.only or users(read_tsv(Path(a.list)), a.why)
+    listed = read_tsv(Path(a.list))
+    by_repo = {r[0]: r for r in listed}
+    repos = a.only or users(listed, a.why)
     recipes = {r[0]: r[1] for r in read_tsv(Path(a.recipes)) if len(r) > 1} if a.recipes else {}
     report_path = Path(a.report)
     report = read_tsv(report_path)
@@ -276,7 +297,7 @@ def rebuild(a) -> int:
         clone.parent.mkdir(parents=True, exist_ok=True)
         t0 = time.time()
         with open(work / repo / "fetch.log", "w", encoding="utf-8") as lf:
-            rc = _fetch(owner, repo, clone, lf)
+            rc = _fetch(owner, repo, clone, lf, "HEAD" if a.head else release_ref(by_repo.get(repo)))
         head = subprocess.run(["git", "-C", str(clone), "rev-parse", "HEAD"], capture_output=True,
                               text=True).stdout.strip() if rc == 0 else ""
         if rc == 0 and not a.again and already_built(report, repo, head, stove_id):
@@ -332,6 +353,8 @@ def main(argv=None) -> int:
     r.add_argument("--why", choices=("both", "pthread", "fmo"), default="both",
                    help="which repos of the list: libpthread carriers, programs released before open8, or both")
     r.add_argument("--again", action="store_true")
+    r.add_argument("--head", action="store_true",
+                   help="build the default branch's head, not the release's tag the scan found")
     a = p.parse_args(argv)
     return scan(a) if a.cmd == "scan" else rebuild(a)
 
