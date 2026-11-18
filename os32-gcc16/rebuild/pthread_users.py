@@ -1,29 +1,36 @@
 #!/usr/bin/env python3
-"""Find the DalsinAI programs that carry libpthread, and rebuild them on a new os32-gcc16 stove.
+"""Find the DalsinAI programs open9 has to rebuild, and rebuild them on the new os32-gcc16 stove, unattended.
 
-Programs link libpthread statically: a fix in it (GFOpenAmigaGCC open9's pthread_cond_signal, aros-stuff
-0011) reaches a program only when it is linked again. libpthread is one object (pthread.o), so a program that
-calls any pthread function carries all of it, and its text "pthread thread #%ld" (the name pthread_create gives
-a new task). That text is how this script tells, from what was really shipped, which programs carry it.
+Two reasons a shipped program needs building again:
+- libpthread (open9, aros-stuff 0011, pthread_cond_signal). Programs link it statically, so the fix reaches a
+  program only when it is linked again. libpthread is one object (pthread.o): a program that calls any pthread
+  function, or uses std::thread / std::condition_variable, carries all of it, and its text "pthread thread #%ld"
+  (the name pthread_create gives a new task). That text tells, from what was really shipped, who carries it.
+- fold-mem-offsets (GCC 0019, fixed from open8, kept in open9): open6 and open7 could put a memory-to-memory
+  store 8 bytes early at -O2/-O3 with -m68040/-m68060, in any 68k program. Cradle's stove has been open8 since
+  14 Nov 2026 18:55 UTC, so a release published before then was built on open6 or open7.
 
-    pthread_users.py scan    [--owner DalsinAI] [--repos FILE] [--work DIR] [--out pthread-users.tsv]
-    pthread_users.py rebuild --stove STOVE [--list pthread-users.tsv] [--recipes recipes.tsv]
-                             [--work DIR] [--report rebuild-report.tsv] [--only REPO ...] [--again]
+    pthread_users.py scan    [--owner DalsinAI] [--repos FILE] [--work DIR] [--out pthread-users.tsv] [--resume]
+    pthread_users.py rebuild --stove STOVE [--list pthread-users.tsv] [--why both|pthread|fmo]
+                             [--recipes recipes.tsv] [--work DIR] [--report rebuild-report.tsv]
+                             [--only REPO ...] [--again]
 
 scan: for every repo of the owner (or the names in --repos), downloads its newest release's archives (.lha,
-.zip, .tar.*, .tgz), unpacks them and looks in every file for the text. Writes one line per repo: repo, tag,
-"yes"/"no"/"no-release"/"error", the files that carry it. Downloads are removed as it goes.
+.zip, .tar.*, .tgz), unpacks them, looks in every file for libpthread's text and for AmigaOS hunk programs. One
+line per repo: repo, tag, libpthread "yes"/"no"/"no-release"/"error", the files that carry it, the release's
+publish time, "yes"/"no" AmigaOS programs. Downloads are removed as it goes.
 
-rebuild: for every "yes" repo of the list (or --only), clones or updates it under WORK, runs its build recipe
-with STOVE and OUT set (the output must land in OUT; recipes.tsv: repo <TAB> command, run in the clone; the default is
-package/build-amiga.sh, then build-amiga.sh, when the repo has one), and checks the build used STOVE's
-compiler and that the output still carries libpthread. A repo with no recipe is reported, never guessed.
-Nothing is published: the outputs stay in WORK/<repo>/out for each repo's own release route.
-Each line of the report: repo, result (built / failed / no-recipe / no-libpthread), seconds, out folder, log.
+rebuild: for every repo of the list that --why picks (default both: carries libpthread, or has AmigaOS programs
+released before open8), or --only, clones or updates it under WORK and runs its build recipe in the clone with
+STOVE, OS32_GCC16 and OUT set (the output must land in OUT): recipes.tsv's "repo <TAB> command", else
+package/build-amiga.sh, else build-amiga.sh. A repo with none is "no-recipe", never guessed. A build that leaves
+no AmigaOS program in OUT is "no-output". Nothing is published: each output stays in WORK/<repo>/out for the
+repo's own release route. Report lines: repo, result (built / failed / no-recipe / no-output), seconds, out,
+log, head, stove, and whether OUT carries libpthread.
 
 Runs unattended: no prompts, one log per repo, the report rewritten after every repo so a stopped run shows
-where it got to, and a repo already "built" in the report with the same head and stove is skipped (--again
-builds it anyway). Needs gh (signed in), git, python3, and lha or 7z for .lha archives.
+where it got to, and a repo already "built" at the same head on the same stove is skipped (--again builds it
+anyway). Needs gh (signed in), git, python3, and lha or 7z for .lha archives.
 MIT, Copyright (c) 2026 AmiCradle Team.
 """
 from __future__ import annotations
@@ -41,6 +48,11 @@ import zipfile
 from pathlib import Path
 
 MARKER = b"pthread thread #"
+HUNK = b"\x00\x00\x03\xf3"          # HUNK_HEADER: an AmigaOS executable or library
+# GFOpenAmigaGCC 16.2.0-open8 (GCC 0019, the fold-mem-offsets wrong-code fix) became Cradle's os32-gcc16 at
+# 14 Nov 2026 18:55 UTC (STOVE.json "upgraded" on daletop). A 68040/68060 program built at -O2 or -O3 before
+# that, on open6 or open7, can carry the bad stores; one released before it was built before it.
+FMO_FIXED = "2026-11-14T19:00:00Z"
 ARCHIVES = (".lha", ".lzh", ".zip", ".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".tar")
 DEFAULT_RECIPES = ("package/build-amiga.sh", "build-amiga.sh")
 
@@ -55,6 +67,20 @@ def carries_libpthread(folder: Path) -> list[str]:
             try:
                 if MARKER in p.read_bytes():
                     hits.append(str(p.relative_to(folder)))
+            except OSError:
+                pass
+    return hits
+
+
+def amiga_programs(folder: Path) -> list[str]:
+    """The files under folder (relative paths, sorted) that are AmigaOS hunk executables or libraries."""
+    hits = []
+    for p in sorted(folder.rglob("*")):
+        if p.is_file() and not p.is_symlink():
+            try:
+                with open(p, "rb") as f:
+                    if f.read(4) == HUNK:
+                        hits.append(str(p.relative_to(folder)))
             except OSError:
                 pass
     return hits
@@ -111,9 +137,16 @@ def write_tsv(path: Path, header: str, rows: list[list[str]]) -> None:
     tmp.replace(path)
 
 
-def users(list_rows: list[list[str]]) -> list[str]:
-    """The repos a scan found carrying libpthread, in the list's order."""
-    return [r[0] for r in list_rows if len(r) > 2 and r[2] == "yes"]
+def users(list_rows: list[list[str]], why: str = "both", fixed: str = FMO_FIXED) -> list[str]:
+    """The repos to rebuild, in the list's order. why "pthread": the scan found libpthread in their release;
+    "fmo": their release has AmigaOS programs and was published before open8 (fixed); "both": either."""
+    out = []
+    for r in list_rows:
+        pt = len(r) > 2 and r[2] == "yes"
+        fmo = len(r) > 5 and r[5] == "yes" and r[4] != "" and r[4] < fixed
+        if (why in ("pthread", "both") and pt) or (why in ("fmo", "both") and fmo):
+            out.append(r[0])
+    return out
 
 
 def recipe_for(repo: str, clone: Path, recipes: dict[str, str]) -> str | None:
@@ -161,14 +194,15 @@ def list_repos(owner: str) -> list[str]:
 
 
 def newest_release(owner: str, repo: str):
-    """(tag, [asset names]) of the newest release, pre-releases included; None when there is none."""
+    """(tag, [asset names], published_at) of the newest release, pre-releases included; None when none."""
     try:
         rel = gh_json(["api", f"repos/{owner}/{repo}/releases?per_page=1"])
     except subprocess.CalledProcessError:
         return None
     if not rel:
         return None
-    return rel[0]["tag_name"], [a["name"] for a in rel[0].get("assets", [])]
+    return (rel[0]["tag_name"], [a["name"] for a in rel[0].get("assets", [])],
+            rel[0].get("published_at") or rel[0].get("created_at") or "")
 
 
 def scan(a) -> int:
@@ -183,27 +217,31 @@ def scan(a) -> int:
             continue
         rel = newest_release(owner, repo)
         if rel is None:
-            rows.append([repo, "", "no-release", ""])
+            rows.append([repo, "", "no-release", "", "", ""])
         else:
-            tag, assets = rel
+            tag, assets, published = rel
             arcs = [n for n in assets if is_archive(n)]
             with tempfile.TemporaryDirectory(dir=work) as tmp:
                 t = Path(tmp)
                 try:
-                    hits = []
+                    hits, progs = [], 0
                     for n in arcs:
                         subprocess.run(["gh", "release", "download", tag, "-R", f"{owner}/{repo}", "-p", n,
                                         "-D", str(t / "dl")], check=True, capture_output=True)
                         unpack(t / "dl" / n, t / "x" / n)
                         hits += [f"{n}:{h}" for h in carries_libpthread(t / "x" / n)]
+                        progs += len(amiga_programs(t / "x" / n))
                         (t / "dl" / n).unlink(missing_ok=True)
                         shutil.rmtree(t / "x" / n, ignore_errors=True)
-                    rows.append([repo, tag, "yes" if hits else "no", " ".join(hits)])
+                    rows.append([repo, tag, "yes" if hits else "no", " ".join(hits), published,
+                                 "yes" if progs else "no"])
                 except Exception as e:  # one repo's trouble never stops the scan
-                    rows.append([repo, tag, "error", str(e)[:200]])
+                    rows.append([repo, tag, "error", str(e)[:200], published, ""])
         print(f"[{i}/{len(names)}] {repo}: {rows[-1][2]}", flush=True)
-        write_tsv(out, "repo\ttag\tcarries libpthread\tfiles", rows)
-    print(f"{len(users(rows))} of {len(rows)} repos carry libpthread: {out}")
+        write_tsv(out, "repo\ttag\tcarries libpthread\tfiles\tpublished\thas AmigaOS programs", rows)
+    print(f"{len(users(rows, 'pthread'))} of {len(rows)} repos carry libpthread; "
+          f"{len(users(rows, 'fmo'))} have AmigaOS programs released before open8 ({FMO_FIXED}); "
+          f"{len(users(rows))} to rebuild in all: {out}")
     return 0
 
 
@@ -225,7 +263,7 @@ def rebuild(a) -> int:
     if not stove_id:
         print(f"{stove}: not a stove (no STOVE.json release, no prefix/bin/m68k-amigaos-gcc)")
         return 2
-    repos = a.only or users(read_tsv(Path(a.list)))
+    repos = a.only or users(read_tsv(Path(a.list)), a.why)
     recipes = {r[0]: r[1] for r in read_tsv(Path(a.recipes)) if len(r) > 1} if a.recipes else {}
     report_path = Path(a.report)
     report = read_tsv(report_path)
@@ -260,13 +298,14 @@ def rebuild(a) -> int:
                                     stdin=subprocess.DEVNULL).returncode
             if rc != 0:
                 result = "failed"
-            elif not carries_libpthread(out):
-                result = "no-libpthread"
+            elif not amiga_programs(out):
+                result = "no-output"
             else:
                 result = "built"
         secs = str(int(time.time() - t0))
-        report = [r for r in report if r[0] != repo] + [[repo, result, secs, str(out), str(log), head, stove_id]]
-        write_tsv(report_path, "repo\tresult\tseconds\tout\tlog\thead\tstove", report)
+        pt = "yes" if result == "built" and carries_libpthread(out) else "no"
+        report = [r for r in report if r[0] != repo] + [[repo, result, secs, str(out), str(log), head, stove_id, pt]]
+        write_tsv(report_path, "repo\tresult\tseconds\tout\tlog\thead\tstove\tlibpthread", report)
         failed += result != "built"
         print(f"[{i}/{len(repos)}] {repo}: {result} ({secs} s)", flush=True)
     print(f"report: {report_path}; {failed} not built")
@@ -290,6 +329,8 @@ def main(argv=None) -> int:
     r.add_argument("--work", default=os.path.expanduser("~/AmiCradle-dev/scratch/pthread-rebuild"))
     r.add_argument("--report", default="rebuild-report.tsv")
     r.add_argument("--only", nargs="*")
+    r.add_argument("--why", choices=("both", "pthread", "fmo"), default="both",
+                   help="which repos of the list: libpthread carriers, programs released before open8, or both")
     r.add_argument("--again", action="store_true")
     a = p.parse_args(argv)
     return scan(a) if a.cmd == "scan" else rebuild(a)

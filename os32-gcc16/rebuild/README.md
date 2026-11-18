@@ -1,4 +1,16 @@
-# Rebuilding the programs that carry libpthread
+# Rebuilding the programs open9 has to rebuild
+
+Two reasons a shipped program needs building again on the open9 stove:
+
+- **libpthread** (open9's fix). See below.
+- **fold-mem-offsets** (GCC 0019, fixed from open8 and kept in open9). open6 and open7 could put a
+  memory-to-memory store (`move.b (a1),2(a0)`) 8 bytes early at `-O2`/`-O3` with `-m68040`/`-m68060`, in any
+  68k program, threads or not. Cradle's stove has been open8 since 14 Nov 2026 18:55 UTC, so every release with
+  AmigaOS programs published before then was built on open6 or open7. `scan` records each release's publish time
+  and whether it holds AmigaOS hunk programs; `rebuild --why both` (the default) takes both groups,
+  `--why pthread` or `--why fmo` one of them.
+
+## libpthread
 
 Programs link libpthread statically, so a fix in it (GFOpenAmigaGCC 16.2.0-open9: every `pthread_cond_signal`
 wakes a thread that is still waiting, aros-stuff 0011) reaches a program only when it is linked again on the new
@@ -16,14 +28,14 @@ python3 pthread_users.py rebuild --stove ~/AmiCradle/kitchen/stoves/os32-gcc16 \
     --list pthread-users.tsv --report rebuild-report.tsv
 ```
 
-- `scan` writes one line per repo: repo, newest release tag, `yes`/`no`/`no-release`/`error`, and the files
-  in the release that carry libpthread. `--resume` keeps the repos already in the file.
+- `scan` writes one line per repo: repo, newest release tag, `yes`/`no`/`no-release`/`error`, the files
+  in the release that carry libpthread, the release's publish time, and `yes`/`no` AmigaOS programs. `--resume` keeps the repos already in the file.
 - `rebuild` clones (or updates) each `yes` repo under `~/AmiCradle-dev/scratch/pthread-rebuild/<repo>/src` and
   runs its recipe there with `STOVE`, `OS32_GCC16` and `OUT` set: `recipes.tsv`'s line for the repo, else
   `package/build-amiga.sh`, else `build-amiga.sh`. A repo with neither is `no-recipe` (add a line to
-  `recipes.tsv`), never guessed. A build whose `OUT` holds no libpthread is `no-libpthread`. The report
-  (`repo, result, seconds, out, log, head, stove`) is rewritten after every repo; a repo already `built` at the
+  `recipes.tsv`), never guessed. A build that leaves no AmigaOS program in `OUT` is `no-output`. The report
+  (`repo, result, seconds, out, log, head, stove, libpthread`) is rewritten after every repo; a repo already `built` at the
   same head on the same stove is skipped, so a stopped run carries on where it was (`--again` rebuilds).
 - Nothing is published. Each rebuilt program goes out through its own repo's release route.
 
-`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 15 tests.
+`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 16 tests.

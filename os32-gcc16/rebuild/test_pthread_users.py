@@ -15,7 +15,8 @@ from unittest import mock
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pthread_users as pu  # noqa: E402
 
-PTHREAD = b"\x4e\x75junk" + pu.MARKER + b"%ld\x00more"
+PTHREAD = pu.HUNK + b"\x4e\x75junk" + pu.MARKER + b"%ld\x00more"
+PROGRAM = pu.HUNK + b"\x00\x00\x00\x00plain program"
 
 
 class Tmp(unittest.TestCase):
@@ -34,6 +35,13 @@ class Carries(Tmp):
         (self.t / "Game.info").write_bytes(b"icon")
         (self.t / "Readme").write_bytes(b"pthread thread")  # no '#': not libpthread's text
         self.assertEqual(pu.carries_libpthread(self.t), ["C/Game"])
+
+    def test_amiga_programs(self):
+        (self.t / "C").mkdir()
+        (self.t / "C" / "Prog").write_bytes(PROGRAM)
+        (self.t / "Prog.info").write_bytes(b"\xe3\x10icon")
+        (self.t / "Readme").write_bytes(b"text " + pu.HUNK)       # the magic not at the start: not a program
+        self.assertEqual(pu.amiga_programs(self.t), ["C/Prog"])
 
     def test_empty_folder(self):
         self.assertEqual(pu.carries_libpthread(self.t), [])
@@ -72,11 +80,18 @@ class Archives(Tmp):
 class Lists(Tmp):
     def test_tsv_round_trip_and_users(self):
         p = self.t / "l.tsv"
-        rows = [["a", "v1", "yes", "A.lha:C/A"], ["b", "v2", "no", ""], ["c", "", "no-release", ""],
-                ["d", "v3", "error", "boom"], ["e", "v4", "yes", "E.lha:E"]]
-        pu.write_tsv(p, "repo\ttag\tcarries\tfiles", rows)
+        old, new = "2026-11-10T12:00:00Z", "2026-11-16T12:00:00Z"
+        rows = [["a", "v1", "yes", "A.lha:C/A", new, "yes"], ["b", "v2", "no", "", old, "yes"],
+                ["c", "", "no-release", "", "", ""], ["d", "v3", "error", "boom", old, ""],
+                ["e", "v4", "yes", "E.lha:E", old, "yes"], ["f", "v5", "no", "", new, "yes"],
+                ["g", "v6", "no", "", old, "no"], ["h", "v7", "yes", "H.lha:H"]]   # a scan from before fmo
+        pu.write_tsv(p, "repo\ttag\tcarries\tfiles\tpublished\tprograms", rows)
         self.assertEqual(pu.read_tsv(p), rows)
-        self.assertEqual(pu.users(pu.read_tsv(p)), ["a", "e"])
+        got = pu.read_tsv(p)
+        self.assertEqual(pu.users(got, "pthread"), ["a", "e", "h"])
+        self.assertEqual(pu.users(got, "fmo"), ["b", "e"])        # programs, released before open8
+        self.assertEqual(pu.users(got), ["a", "b", "e", "h"])
+        self.assertEqual(pu.users(got, "fmo", fixed="2026-11-01T00:00:00Z"), [])
         self.assertFalse(p.with_suffix(".tsv.part").exists())
 
     def test_missing_file_is_empty(self):
@@ -135,8 +150,8 @@ class RebuildRun(Tmp):
         stove.mkdir()
         (stove / "STOVE.json").write_text(json.dumps({"release": "GFOpenAmigaGCC 16.2.0-open9"}))
         srcs = {}
-        for name, script in {"good": 'printf "\\116\\165pthread thread #%%ld" > "$OUT/Prog"; test -n "$STOVE"',
-                             "bad": "exit 3", "nolib": 'echo hi > "$OUT/Prog"', "none": None}.items():
+        for name, script in {"good": 'printf "\\000\\000\\003\\363pthread thread #%%ld" > "$OUT/Prog"; test -n "$STOVE"',
+                             "bad": "exit 3", "nolib": 'printf "\\000\\000\\003\\363plain" > "$OUT/Prog"', "empty": "true", "none": None}.items():
             r = self.t / "remote" / name
             r.mkdir(parents=True)
             if script is not None:
@@ -155,11 +170,14 @@ class RebuildRun(Tmp):
         real_run = subprocess.run
         report = self.t / "report.tsv"
         args = ["rebuild", "--stove", str(stove), "--work", str(self.t / "work"), "--report", str(report),
-                "--recipes", str(self.t / "none.tsv"), "--only", "good", "bad", "nolib", "none"]
+                "--recipes", str(self.t / "none.tsv"), "--only", "good", "bad", "nolib", "empty", "none"]
         with mock.patch.object(pu.subprocess, "run", side_effect=fake_run):
             self.assertEqual(pu.main(args), 1)
-            got = {r[0]: r[1] for r in pu.read_tsv(report)}
-            self.assertEqual(got, {"good": "built", "bad": "failed", "nolib": "no-libpthread", "none": "no-recipe"})
+            rows = pu.read_tsv(report)
+            got = {r[0]: r[1] for r in rows}
+            self.assertEqual(got, {"good": "built", "bad": "failed", "nolib": "built", "empty": "no-output",
+                                   "none": "no-recipe"})
+            self.assertEqual({r[0]: r[7] for r in rows if r[1] == "built"}, {"good": "yes", "nolib": "no"})
             # a second run skips what is built at the same head on the same stove
             before = (self.t / "work" / "good" / "build.log").stat().st_mtime_ns
             pu.main(args)
