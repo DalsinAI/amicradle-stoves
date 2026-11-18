@@ -22,7 +22,7 @@ publish time, "yes"/"no" AmigaOS programs. Downloads are removed as it goes.
 
 rebuild: for every repo of the list that --why picks (default both: carries libpthread, or has AmigaOS programs
 released before open8), or --only, clones or updates it under WORK and runs its build recipe in the clone with
-STOVE, OS32_GCC16 and OUT set (the output must land in OUT): recipes.tsv's "repo <TAB> command", else
+STOVE, OS32_GCC16, OUT and REBUILD (this folder, for recipes/) set (the output must land in OUT): recipes.tsv's "repo <TAB> command", else
 package/build-amiga.sh, else build-amiga.sh. A repo with none is "no-recipe", never guessed. A build that leaves
 no AmigaOS program in OUT is "no-output". Nothing is published: each output stays in WORK/<repo>/out for the
 repo's own release route. Report lines: repo, result (built / failed / no-recipe / no-output), seconds, out,
@@ -48,6 +48,7 @@ import time
 import zipfile
 from pathlib import Path
 
+HERE = Path(__file__).resolve().parent
 MARKER = b"pthread thread #"
 HUNK = b"\x00\x00\x03\xf3"          # HUNK_HEADER: an AmigaOS executable or library
 # GFOpenAmigaGCC 16.2.0-open8 (GCC 0019, the fold-mem-offsets wrong-code fix) became Cradle's os32-gcc16 at
@@ -311,7 +312,7 @@ def rebuild(a) -> int:
         else:
             shutil.rmtree(out, ignore_errors=True)
             out.mkdir(parents=True)
-            env = dict(os.environ, STOVE=str(stove), OUT=str(out), OS32_GCC16=str(stove),
+            env = dict(os.environ, STOVE=str(stove), OUT=str(out), OS32_GCC16=str(stove), REBUILD=str(HERE),
                        PATH=f"{stove}/prefix/bin:{os.environ.get('PATH', '')}")
             with open(log, "w", encoding="utf-8") as lf:
                 lf.write(f"$ {cmd}   (STOVE={stove} OUT={out})\n"); lf.flush()

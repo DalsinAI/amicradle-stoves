@@ -130,6 +130,48 @@ class Recipes(Tmp):
             self.assertTrue(row[0] and row[1].strip(), row)
 
 
+class MakefileRecipe(Tmp):
+    """recipes/amiga-makefile.sh with a makefile like the ports' amiga/Makefile.amigaos."""
+    MF = ("STOVE ?= /old/os32-gcc16-open6\nBUILD = build\nOUT = $(BUILD)/Game\n"
+          "all: ; mkdir -p $(OUT) && printf '%s' \"$(STOVE)\" > $(OUT)/stove && printf '\\000\\000\\003\\363' > $(OUT)/Game\n"
+          "dist: all ; mkdir -p dist/Game && cp $(OUT)/Game dist/Game/\n")
+
+    def make(self, *args, stove_arg="", src_from=""):
+        import subprocess
+        (self.t / "src").mkdir(exist_ok=True)
+        (self.t / "src" / "Makefile.amigaos").write_text(self.MF)
+        out = self.t / "out"
+        out.mkdir(exist_ok=True)
+        env = dict(os.environ, STOVE="/new/stove", OUT=str(out), STOVE_ARG=stove_arg, FROM=src_from)
+        return subprocess.run(["sh", str(pu.HERE / "recipes" / "amiga-makefile.sh"), "Makefile.amigaos", *args],
+                              cwd=self.t / "src", env=env, capture_output=True, text=True), out
+
+    def test_builds_with_the_given_stove_and_copies_out(self):
+        r, out = self.make()
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual((out / "Game" / "stove").read_text(), "/new/stove")   # not the makefile's open6 default
+        self.assertEqual(pu.amiga_programs(out), ["Game/Game"])
+
+    def test_target_vars_and_prefix(self):
+        r, out = self.make("all", "BUILD=b2", stove_arg="prefix")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual((out / "Game" / "stove").read_text(), "/new/stove/prefix")
+        self.assertTrue((self.t / "src" / "b2" / "Game" / "Game").is_file())
+
+    def test_from_names_the_folder(self):
+        self.MF = "all: ; mkdir -p build/amigaos && printf '\\000\\000\\003\\363' > build/amigaos/xrick\n"
+        r, out = self.make(src_from="build/amigaos")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(pu.amiga_programs(out), ["amigaos/xrick"])
+        r, _ = self.make()                          # no $(OUT), no dist/, no FROM: fails, never guesses
+        self.assertNotEqual(r.returncode, 0)
+
+    def test_a_failing_make_fails(self):
+        self.MF = "all: ; exit 4\n"
+        r, _ = self.make()
+        self.assertNotEqual(r.returncode, 0)
+
+
 class Stove(Tmp):
     def test_identity_from_stove_json(self):
         (self.t / "STOVE.json").write_text(json.dumps({"release": "GFOpenAmigaGCC 16.2.0-open9"}))

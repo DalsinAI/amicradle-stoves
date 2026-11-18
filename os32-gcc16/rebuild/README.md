@@ -32,11 +32,29 @@ python3 pthread_users.py rebuild --stove ~/AmiCradle/kitchen/stoves/os32-gcc16 \
   in the release that carry libpthread, the release's publish time, and `yes`/`no` AmigaOS programs. `--resume` keeps the repos already in the file.
 - `rebuild` builds what shipped: each repo at its scanned release's tag (many of those are on a branch not yet
   merged; `--head` takes the default branch instead). It clones (or updates) each repo under `~/AmiCradle-dev/scratch/pthread-rebuild/<repo>/src` and
-  runs its recipe there with `STOVE`, `OS32_GCC16` and `OUT` set: `recipes.tsv`'s line for the repo, else
+  runs its recipe there with `STOVE`, `OS32_GCC16`, `OUT` and `REBUILD` (this folder) set: `recipes.tsv`'s line for the repo, else
   `package/build-amiga.sh`, else `build-amiga.sh`. A repo with neither is `no-recipe` (add a line to
   `recipes.tsv`), never guessed. A build that leaves no AmigaOS program in `OUT` is `no-output`. The report
   (`repo, result, seconds, out, log, head, stove, libpthread`) is rewritten after every repo; a repo already `built` at the
   same head on the same stove is skipped, so a stopped run carries on where it was (`--again` rebuilds).
 - Nothing is published. Each rebuilt program goes out through its own repo's release route.
 
-`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 18 tests.
+## Recipes
+
+`recipes.tsv` holds a line for each listed repo whose release tag has no `package/build-amiga.sh` or
+`build-amiga.sh` (18 Nov: 16 of the 33). `recipes/amiga-makefile.sh MAKEFILE [TARGET] [NAME=VALUE ...]` builds a
+port with its own Amiga makefile: those makefiles default `STOVE` to the old `os32-gcc16-open6` path, so it puts
+the rebuild's stove on make's command line, then copies the makefile's `$(OUT)` folder (else `dist/`, or
+`FROM=DIR`) into `$OUT`.
+
+Still without a recipe, each for its own reason:
+- amigaaishireimu, amigasoniclasthope, amigaspeedy: no compile of their own; `scripts/package-standalone.sh -e`
+  repackages amigaopensurge's engine archive, so they follow amigaopensurge's rebuild.
+- amigaas2r, amigaastromenace, amigaopenloco: the release tag is gone from the repo, so what shipped can't be
+  checked out.
+- amigafreeciv, amigaliquidwar5, amigagrafx2: their port folders build in steps (platforms/amigaos3,
+  source/native-port) that need a hand.
+- gfopenbrowser, gfopengnustep, amicradle-guest, gfopenasm, gfopenevent, gfopenprefs, gfopentata, gfosfonts:
+  large or multi-part builds with their own release route; rebuild them there.
+
+`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 22 tests.
