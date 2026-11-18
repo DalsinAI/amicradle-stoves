@@ -55,7 +55,7 @@ rm -rf "$STOVES/.next/os32-gcc16"
 OS32_GCC16_LOCK="$LOCK" sh "$HERE/upgrade.sh" "$STOVES" "$A"
 
 echo "== 3. what the live prefix adds"
-rsync -a --ignore-existing "$LIVE/prefix/" "$NEXT/prefix/"
+rsync -a --ignore-existing --exclude "*.vendor" "$LIVE/prefix/" "$NEXT/prefix/"   # stove_openndk.py use makes its own .vendor files
 SPECS=prefix/lib/gcc/m68k-amigaos/16.2.0b/specs
 [ -f "$LIVE/$SPECS" ] && [ -f "$NEXT/$SPECS" ] && python3 "$HERE/specs_merge.py" "$LIVE/$SPECS" "$NEXT/$SPECS"
 
