@@ -60,7 +60,7 @@ SPECS=prefix/lib/gcc/m68k-amigaos/16.2.0b/specs
 [ -f "$LIVE/$SPECS" ] && [ -f "$NEXT/$SPECS" ] && python3 "$HERE/specs_merge.py" "$LIVE/$SPECS" "$NEXT/$SPECS"
 
 echo "== 4. kits and OpenNDK"
-python3 "$OS32" --reapply-kits --stoves "$STOVES/.next" --stove os32-gcc16
+python3 "$OS32" --reapply-kits --live-stove --stoves "$STOVES/.next" --stove os32-gcc16   # .next is under STOVES
 python3 "$NDK" use "$NEXT"
 
 echo "== 5. checks"

@@ -35,6 +35,15 @@ class Merge(unittest.TestCase):
         text, added, differ = sm.merge(live, RELEASE + "*lib:\n+ -lextra\n\n")
         self.assertEqual((added, differ), (["gfmalloc"], []))
 
+    def test_a_later_definition_is_carried(self):
+        rel = RELEASE + "*lib_libnix:\n-lnixmain -lnix\n\n"
+        live = rel + "*lib_libnix:\n-lnixmain -lgfmalloc -lnix\n\n"   # open8's: defined again, with gfmalloc
+        text, added, differ = sm.merge(live, rel)
+        self.assertEqual((added, differ), (["lib_libnix"], []))
+        self.assertTrue(text.endswith("*lib_libnix:\n-lnixmain -lgfmalloc -lnix\n\n"))
+        self.assertEqual(sm.blocks(text)["lib_libnix"], sm.blocks(live)["lib_libnix"])
+        self.assertEqual(sm.merge(live, text)[1], [])                     # and only once
+
     def test_nothing_to_carry_leaves_it(self):
         text, added, differ = sm.merge(RELEASE, RELEASE)
         self.assertEqual((text, added, differ), (RELEASE, [], []))

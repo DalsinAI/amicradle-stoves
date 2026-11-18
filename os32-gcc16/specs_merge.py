@@ -7,8 +7,9 @@ A GCC specs file is blocks: a "*name:" line, the block's lines, a blank line. Th
 release's plus blocks the Cradle machine added (open8's "*gfmalloc:" and "*lib_libnix:", README: "the live open6
 specs file's *gfmalloc: and *lib_libnix: blocks appended"). Every block the live specs has and the next one
 hasn't is appended to the next one, as it is; the next specs is written only if that changes it, and the old one
-kept as specs.before-merge. A block both have with different text is the release's to decide: it is listed and
-the next one's text stays. --check writes nothing.
+kept as specs.before-merge. A name the live specs defines again after the release's own text (open8's second
+"*lib_libnix:", which adds -lgfmalloc) gets those later definitions appended too. Any other block both have with
+different text is the release's to decide: it is listed and the next one's text stays. --check writes nothing.
 MIT, Copyright (c) 2026 AmiCradle Team.
 """
 from __future__ import annotations
@@ -41,13 +42,20 @@ def blocks(text: str) -> dict[str, str]:
 
 
 def merge(live: str, nxt: str) -> tuple[str, list[str], list[str]]:
-    """(the next specs with the live-only blocks appended, the names appended, the names that differ)."""
+    """(the next specs with the live-only blocks and later definitions appended, the names appended, the names
+    that differ and keep the release's text)."""
     lb, nb = blocks(live), blocks(nxt)
-    added = [n for n in lb if n not in nb]
-    differ = [n for n in lb if n in nb and lb[n] != nb[n]]
+    extra = {}
+    for n in lb:
+        if n not in nb:
+            extra[n] = lb[n]
+        elif lb[n] != nb[n] and lb[n].startswith(nb[n] + "\n\n"):
+            extra[n] = lb[n][len(nb[n]) + 2:]           # the live's later definitions of the release's name
+    added = list(extra)
+    differ = [n for n in lb if n in nb and lb[n] != nb[n] and n not in extra]
     text = nxt
     if added:
-        text = nxt.rstrip("\n") + "\n\n" + "".join(lb[n] + "\n\n" for n in added)
+        text = nxt.rstrip("\n") + "\n\n" + "".join(extra[n] + "\n\n" for n in added)
     return text, added, differ
 
 
