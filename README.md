@@ -9,6 +9,7 @@ machine it targets. Built stoves are published as releases.
 | --- | --- | --- | --- |
 | [aros68k-gcc16](aros68k-gcc16/) | GCC 16.2.0, binutils 2.47 | AROS 68k (68040) | Experimental |
 | [os32-gcc16](os32-gcc16/) | bebbo's GCC 16.2.0b (`amiga16.2`) | AmigaOS 3.x (68040) | Tests only: built by [gfopengcc](https://github.com/DalsinAI/gfopengcc) |
+| [linux-gcc16](linux-gcc16/) | GFOpenAmigaGCC 16.2.0-open9 (stock GCC 16.2.0, binutils 2.47, 0019) | Linux kernels: aarch64 (CM4, Pi 5), x86-64 (AMD appliance), 32-bit PowerPC (AC460) | Released by gfopengcc as pre-releases |
 | [os4-gcc16](os4-gcc16/) | GCC 16.2.0, binutils 2.47, with our AmigaOS 4 patches | AmigaOS 4.1 PowerPC | Experimental |
 | [rust-m68k](rust-m68k/) | Rust 1.97.0 on LLVM 22.1 with our M68k fixes | 68040, `no_std` (`m68k-unknown-none-elf`) | Experimental |
 
