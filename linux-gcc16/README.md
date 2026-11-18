@@ -8,8 +8,8 @@ no C library: they build kernels and other freestanding code, not Linux programs
 | Stove | Target | For | Lock |
 | --- | --- | --- | --- |
 | linux-aarch64-gcc16 | aarch64-linux-gnu | CM4 and Pi 5 cards (`make ARCH=arm64`) | [aarch64.lock](aarch64.lock) |
-| linux-x86_64-gcc16 | x86_64-linux-gnu | the AMD x86 appliance (`make ARCH=x86_64`) | x86_64.lock |
-| linux-powerpc-gcc16 | powerpc-linux-gnu (32-bit) | the AC460 (`make ARCH=powerpc`) | powerpc.lock |
+| linux-x86_64-gcc16 | x86_64-linux-gnu | the AMD x86 appliance (`make ARCH=x86_64`) | [x86_64.lock](x86_64.lock) |
+| linux-powerpc-gcc16 | powerpc-linux-gnu (32-bit) | the AC460 (`make ARCH=powerpc`) | [powerpc.lock](powerpc.lock) |
 
 ```sh
 linux-gcc16/install.sh ARCH ~/AmiCradle/stoves [ARCHIVE]

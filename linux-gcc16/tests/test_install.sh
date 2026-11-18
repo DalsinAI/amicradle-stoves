@@ -72,5 +72,15 @@ if command -v powerpc-linux-gnu-gcc > /dev/null; then
   sed -e "s/^archive_sha256=.*/archive_sha256=$(sha256sum "$W/p.tar.xz" | cut -d' ' -f1)/" -e "s/^target=.*/target=powerpc-linux-gnu/" -e "s/^top=.*/top=$pt/" "$HERE/aarch64.lock" > "$W/p.lock"
   if LINUX_GCC_LOCK="$W/p.lock" "$HERE/install.sh" powerpc "$W/sp" "$W/p.tar.xz" > "$W/out" 2>&1 && grep -q "a freestanding program" "$W/out"; then ok "powerpc: installs ($(grep 'freestanding' "$W/out"))"; else bad "powerpc: $(cat "$W/out")"; fi
 fi
+# the shipped locks: each names its own target, release, tag and archive
+for a in aarch64 x86_64 powerpc; do
+  L="$HERE/$a.lock"; g() { sed -n "s/^$1=//p" "$L"; }
+  ar=$(g archive); t=$(g tag)
+  if [ "$(g target)" = "$a-linux-gnu" ] && [ "$(g release)" = 16.2.0-open9 ] && [ "$(g identity)" = "(GFOpenAmigaGCC 16.2.0-open9)" ] \
+     && [ "$t" = "v16.2.0-open9-$a-rc1" ] && [ "$ar" = "gfopenamigagcc-16.2.0-open9-$a-linux-gnu-x86_64-linux.tar.xz" ] \
+     && [ "$(g top)" = "${ar%.tar.xz}" ] && [ "$(g archive_url)" = "https://github.com/DalsinAI/gfopengcc/releases/download/$t/$ar" ] \
+     && g archive_sha256 | grep -qE '^[0-9a-f]{64}$' && g source_sha256 | grep -qE '^[0-9a-f]{64}$' && g commit | grep -qE '^[0-9a-f]{40}$'
+  then ok "$a.lock"; else bad "$a.lock"; fi
+done
 if "$HERE/install.sh" ppc "$W/sz" > "$W/out" 2>&1; then bad "takes ARCH ppc"; else ok "refuses another ARCH"; fi
 [ $fails -eq 0 ] && echo "test_install: all passed" || { echo "test_install: $fails failed"; exit 1; }

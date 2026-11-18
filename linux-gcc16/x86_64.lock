@@ -1,0 +1,17 @@
+# linux-x86_64-gcc16's compiler (linux-gcc16/install.sh x86_64): the GFOpenAmigaGCC x86_64-linux-gnu release the stove carries (a
+# kernel cross compiler for the AMD x86 appliance, x86-64 host). install.sh refuses an
+# archive whose SHA-256 isn't the one here, and checks the compiler says the identity.
+# Release: https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open9-x86_64-rc1 (pre-release, tag at
+# 91e6e4a0, gfopengcc #56); the hashes are the release's own SHA256SUMS-x86_64.
+release=16.2.0-open9
+identity=(GFOpenAmigaGCC 16.2.0-open9)
+target=x86_64-linux-gnu
+tag=v16.2.0-open9-x86_64-rc1
+commit=91e6e4a079b70cf707b14a0d36f9f6c80a59edc3
+archive=gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-x86_64-linux.tar.xz
+archive_sha256=041bf1145f749803ee4acce55ceb415eed39e7c4136ac94dc03b5790cd7295c1
+archive_bytes=341504596
+archive_url=https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open9-x86_64-rc1/gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-x86_64-linux.tar.xz
+source=gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-src.tar
+source_sha256=64af15815381d1c533f3f42dd5df01b0dab44e3ac0d6263444940282238ac6ad
+top=gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-x86_64-linux
