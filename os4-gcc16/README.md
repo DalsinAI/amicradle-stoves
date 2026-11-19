@@ -10,6 +10,15 @@ compilers. On a Cradle machine it is the `os4` stove
 Cradle machine the same day with every smoke test passing (see Results).
 Run-time tests on an AC460 come next.
 
+## open9
+
+From 18 November 2026 the recipe is on the GFOpenAmigaGCC 16.2.0-open9 code base, like gfopengcc's other
+targets: the compiler says `GFOpenAmigaGCC 16.2.0-open9`, and gfopengcc's fold-mem-offsets fix
+(`patches/gcc-16.2.0-0019-fold-mem-offsets.patch`, its `patches/gcc/0019`, byte for byte) goes on after the
+AmigaOS patch. `stove.json` carries the release, and the smoke tests check the compiler says it.
+`tests/test_open9.sh` checks the recipe without a build. Build it beside the live `os4` stove, as
+`~/AmiCradle/stoves/os4-gcc16-16.2.0-open9`.
+
 ## Where the patches come from
 
 The AmigaOS 4 support in GCC and binutils is the adtools project's work:

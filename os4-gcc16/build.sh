@@ -59,6 +59,8 @@ CLIB4_REF=30e487d28f9b3d12fc9e4adb641aeff84050de3b
 SDK_VERSION=54.25
 SDK_URL='https://www.hyperion-entertainment.biz/index.php?option=com_registration&amp;view=download&amp;format=raw&amp;file=137'
 
+# The release identity the compiler says (gfopengcc's, kept in step by tests/test_open9.sh).
+RELEASE="GFOpenAmigaGCC 16.2.0-open9"
 PORTS="$WORK/ports"; SRC="$WORK/src"; BUILD="$WORK/build"; LOGS="$WORK/logs"
 # The hash covers build.sh up to the "# 8. Smoke tests" line, which must stay.
 RECIPE_HASH="$( { sed '/^# 8\. Smoke tests/,$d' "$HERE/build.sh"; cat "$HERE/sources.lock" "$HERE"/patches/*.patch; } | sha256sum | cut -c1-16)"
@@ -205,12 +207,15 @@ if ! done_step xgcc; then
     echo "GCC $GCC_VERSION: the compiler"
     unpack "$PORTS/gcc-$GCC_VERSION.tar.xz" "$GCC_SRC"
     logged gcc-patch patch -d "$GCC_SRC" -p1 -F0 --no-backup-if-mismatch -i "$HERE/patches/gcc-$GCC_VERSION-amigaos.patch"
+    # open9 (Dale 18 Nov 2026): gfopengcc's fold-mem-offsets fix (its patches/gcc/0019), as in every
+    # GFOpenAmigaGCC 16.2.0-open9 target; it is in GCC's target-independent pass.
+    logged gcc-patch-0019 patch -d "$GCC_SRC" -p1 -F0 --no-backup-if-mismatch -i "$HERE/patches/gcc-$GCC_VERSION-0019-fold-mem-offsets.patch"
     for lib in gmp-6.3.0.tar.bz2:gmp mpfr-4.2.2.tar.bz2:mpfr mpc-1.4.1.tar.xz:mpc isl-0.27.tar.xz:isl; do
         unpack "$PORTS/${lib%%:*}" "$GCC_SRC/${lib##*:}"
     done
     rm -rf "$GCC_BUILD" && mkdir -p "$GCC_BUILD"
     logged gcc-configure sh -c "cd '$GCC_BUILD' && '$GCC_SRC/configure' --target=$TARGET --prefix='$PREFIX' \
-        --with-pkgversion='AmiCradle os4-gcc16' --with-bugurl=https://github.com/DalsinAI/amicradle-stoves/issues \
+        --with-pkgversion='$RELEASE' --with-bugurl=https://github.com/DalsinAI/amicradle-stoves/issues \
         --enable-languages=c,c++ --enable-threads=amigaos --enable-lto --disable-tls --with-dwarf2 \
         --disable-libstdcxx-pch --disable-c++tools --disable-nls --disable-werror"
     logged gcc-make-xgcc make -C "$GCC_BUILD" -j"$JOBS" all-gcc
@@ -293,22 +298,23 @@ check cxx-clib2 "$T/hello-cxx-clib2" "$CXX" -mcrt=clib2 -athread=native -O2 -o "
 check device "$T/device" "$CC" -O2 -fno-builtin -nostartfiles -nostdlib -o "$T/device" "$SMOKE/device.c" -lgcc
 # The SDK's newlib has no base-relative libc.a, so -mbaserel is tested with clib2, which builds one.
 check baserel "$T/hello-baserel" "$CC" -mcrt=clib2 -mbaserel -O2 -o "$T/hello-baserel" "$SMOKE/hello.c"
+"$CC" --version | sed -n 1p | grep -qF "($RELEASE)" || { results="$results""FAIL identity: $("$CC" --version | sed -n 1p) is not ($RELEASE)\n"; failed=1; }
 printf "$results" | tee "$LOGS/smoke-tests.txt"
 [ "$failed" = 0 ] || { echo "smoke tests failed" >&2; exit 6; }
 mark test
 
 # 9. Identity: what this stove is, so it is never mistaken for another compiler.
-python3 - "$STOVE" "$HERE" "$GCC_VERSION" "$BINUTILS_VERSION" "$SDK_VERSION" "$CLIB2_REF" "$CLIB4_REF" <<'PY'
+python3 - "$STOVE" "$HERE" "$GCC_VERSION" "$BINUTILS_VERSION" "$SDK_VERSION" "$CLIB2_REF" "$CLIB4_REF" "$RELEASE" <<'PY'
 import hashlib, json, subprocess, sys, time
 from pathlib import Path
-stove, here, gcc, binutils, sdk_version, clib2, clib4 = Path(sys.argv[1]), Path(sys.argv[2]), *sys.argv[3:]
+stove, here, gcc, binutils, sdk_version, clib2, clib4, release = Path(sys.argv[1]), Path(sys.argv[2]), *sys.argv[3:]
 prefix = stove / "prefix"
 cc = prefix / "bin" / "ppc-amigaos-gcc"
 sdk = prefix / "ppc-amigaos" / "SDK"
 commit = subprocess.run(["git", "-C", str(here), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
 clib4_built = (stove / ".clib4").read_text().strip() == "built"
 identity = {
-    "schema": 1, "id": "os4-gcc16", "name": "AmigaOS 4.1 PowerPC, GCC 16.2",
+    "schema": 1, "id": "os4-gcc16", "name": "AmigaOS 4.1 PowerPC, GCC 16.2", "release": release,
     "target": "ppc-amigaos", "gcc": gcc, "binutils": binutils,
     "compilerVersion": subprocess.run([str(cc), "--version"], capture_output=True, text=True).stdout.splitlines()[0],
     "recipe": {"repository": "DalsinAI/amicradle-stoves", "commit": commit or None,
