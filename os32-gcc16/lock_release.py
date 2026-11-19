@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Write toolchain.lock for a GFOpenAmigaGCC release, from the release's own files.
 
-    python3 os32-gcc16/lock_release.py VERSION SHA256SUMS ARCHIVE COMMIT [--lock FILE]
+    python3 os32-gcc16/lock_release.py VERSION SHA256SUMS ARCHIVE COMMIT [--lock FILE] [--tag v<VERSION>-rcN]
 
 VERSION is the release (16.2.0-open5), SHA256SUMS and ARCHIVE the release's checksums and x86-64 toolchain as
 downloaded, and COMMIT the full commit its tag v<VERSION> points at (gh api
 repos/DalsinAI/gfopengcc/git/ref/tags/v<VERSION>). The release's names follow from SHA256SUMS: from open5 the
 files are gfopenamigagcc-VERSION-*.tar.xz and the compiler says "GFOpenAmigaGCC VERSION"; open1 to open4 are
 openamigagcc-VERSION-*.tar.xz and "OpenAmigaGCC VERSION". It refuses an archive whose SHA-256 or name isn't the
-one SHA256SUMS lists. Then upgrade.sh and identity/build-amiga.sh take that release.
+one SHA256SUMS lists. --tag pins a release candidate (gfopengcc's pre-release v<VERSION>-rcN: the release's own
+files, under the RC's tag). Then upgrade.sh and identity/build-amiga.sh take that release.
 MIT, Copyright (c) 2026 AmiCradle Team.
 """
 from __future__ import annotations
@@ -34,7 +35,7 @@ def sums(path: Path) -> dict:
     return out
 
 
-def lock_text(version: str, listed: dict, archive: Path, commit: str) -> str:
+def lock_text(version: str, listed: dict, archive: Path, commit: str, tag: str | None = None) -> str:
     for prefix, name in NAMES:
         binary, source = f"{prefix}-{version}-x86_64-linux.tar.xz", f"{prefix}-{version}-src.tar.xz"
         if binary in listed:
@@ -50,7 +51,10 @@ def lock_text(version: str, listed: dict, archive: Path, commit: str) -> str:
         raise SystemExit(f"{archive.name}: SHA-256 {got} is not SHA256SUMS' {listed[binary]}")
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise SystemExit("COMMIT: the tag's full 40-character commit")
-    tag = f"v{version}"
+    tag = tag or f"v{version}"
+    # a release candidate is the release's own build, published as a pre-release tagged v<VERSION>-rcN
+    if not re.fullmatch(re.escape(f"v{version}") + r"(-rc[1-9][0-9]*)?", tag):
+        raise SystemExit(f"--tag {tag}: want v{version} or v{version}-rcN")
     return "\n".join([
         f"# os32-gcc16's compiler: the GFOpenAmigaGCC release the stove carries. Read by upgrade.sh (which refuses an",
         f"# archive whose SHA-256 isn't the one here) and by identity/build-amiga.sh (which fails on a stove whose",
@@ -79,8 +83,9 @@ def main(argv: list[str]) -> int:
     ap.add_argument("archive", type=Path)
     ap.add_argument("commit")
     ap.add_argument("--lock", type=Path, default=HERE / "toolchain.lock")
+    ap.add_argument("--tag", help="the release candidate's tag, v<VERSION>-rcN (default: v<VERSION>)")
     a = ap.parse_args(argv)
-    text = lock_text(a.version, sums(a.sums), a.archive, a.commit)
+    text = lock_text(a.version, sums(a.sums), a.archive, a.commit, a.tag)
     a.lock.write_text(text, encoding="utf-8")
     print(text, end="")
     return 0

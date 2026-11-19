@@ -1,0 +1,20 @@
+# repo	command run in the clone with STOVE, OUT and REBUILD set (output into $OUT). Repos with package/build-amiga.sh or build-amiga.sh need no line.
+# Ports built by amiga/Makefile.amigaos (their STOVE defaults to the old open6 path, so the stove goes on make's line)
+amigabstone	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos dist
+amigacrimsonfields	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos dist
+amigaxu4	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos dist
+amigagigalomania	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
+amigamaelstrom	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
+amigatowertoppler	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
+amigawarmux	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
+amigaxrick	STOVE_ARG=prefix FROM=build/amigaos sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
+# Canvas Skies makefiles (AMIGA_STOVE)
+canvasskies	sh "$REBUILD/recipes/amiga-makefile.sh" ports/amigaos3/Makefile.canvas all AMIGA_STOVE="$STOVE"
+amigasdlsopwith	sh "$REBUILD/recipes/amiga-makefile.sh" ports/amigaos3/Makefile.canvas all AMIGA_STOVE="$STOVE"
+# Their own Cradle entry points or build scripts
+amigaalphac	sh ports/alpha-centauri/build-amiga.sh
+amiganeverball	sh build.sh build/neverball-source && cp -R build/neverball-release/package/Neverball "$OUT/"
+gfopenputty	./build.sh && cp -R build/os3-020/OpenPuTTY "$OUT/"
+gfopensocket	sh guest/network/acnet/build.sh build/opensocket && sh tools/actcptools/build.sh build/opensocket && cp -R build/opensocket "$OUT/"
+gfopeninput	sh library/build.sh build-gcc16 && cp -R build-gcc16 "$OUT/"
+openamigaaudiotools	make && cp -R build/amiga "$OUT/"

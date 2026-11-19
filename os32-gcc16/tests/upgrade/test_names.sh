@@ -79,4 +79,17 @@ printf '#!/bin/sh\necho "m68k-amigaos-gcc (GFOpenAmigaGCC 16.2.0-open4) 16.2.0b"
 out=$(OS32_GCC16_LOCK="$LOCK" STOVE="$S/other" OUT="$S/other/id" sh "$HERE/identity/build-amiga.sh" 2>&1); rc=$?
 check "identity: another release under the new name fails" '[ $rc -ne 0 ]'
 
+# A release candidate (gfopengcc's pre-release v<VERSION>-rcN, the release's own files): --tag pins its tag and
+# download URL; the release, identity and archive stay the release's. Anything but v<VERSION>[-rcN] is refused.
+R="$S/16.2.0-open5/release"; A="$R/gfopenamigagcc-16.2.0-open5-x86_64-linux.tar.xz"
+out=$(python3 "$HERE/lock_release.py" 16.2.0-open5 "$R/SHA256SUMS" "$A" "$COMMIT" --lock "$S/rc.lock" --tag v16.2.0-open5-rc1 2>&1); rc=$?
+check "rc: lock_release.py --tag v16.2.0-open5-rc1 writes the lock" '[ $rc -eq 0 ]'
+check "rc: the lock names the rc tag and its URL, the release's own names" 'grep -qx "tag=v16.2.0-open5-rc1" "$S/rc.lock" \
+    && grep -qx "archive_url=https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open5-rc1/gfopenamigagcc-16.2.0-open5-x86_64-linux.tar.xz" "$S/rc.lock" \
+    && grep -qx "release=16.2.0-open5" "$S/rc.lock" && grep -qx "identity=(GFOpenAmigaGCC 16.2.0-open5)" "$S/rc.lock"'
+for bad in v16.2.0-open5-rc0 v16.2.0-open4-rc1 v16.2.0-open5rc1 16.2.0-open5-rc1 v16.2.0-open5-beta; do
+    out=$(python3 "$HERE/lock_release.py" 16.2.0-open5 "$R/SHA256SUMS" "$A" "$COMMIT" --lock "$S/bad.lock" --tag "$bad" 2>&1); rc=$?
+    check "rc: --tag $bad is refused" '[ $rc -ne 0 ] && [ ! -e "$S/bad.lock" ]'
+done
+
 [ $fails -eq 0 ] && echo PASS || { echo "FAIL ($fails)"; exit 1; }
