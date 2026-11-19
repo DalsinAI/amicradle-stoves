@@ -1,0 +1,16 @@
+# linux-x86_64-glibc-gcc16's compiler (linux-glibc-gcc16/install.sh x86_64): the GFOpenAmigaGCC x86_64-linux-gnu userland
+# release the stove carries (C and C++ over a glibc 2.35 sysroot, x86-64 host). install.sh refuses an
+# archive whose SHA-256 isn't the one here, and checks the compiler says the identity.
+# Release: https://github.com/DalsinAI/gfopengcc/releases/tag/v16.2.0-open9-x86_64-glibc-rc1 (pre-release, gfopengcc #57 + #58, run 44491284142);
+# the hashes are the release's own SHA256SUMS-x86_64-glibc.
+release=16.2.0-open9
+identity=(GFOpenAmigaGCC 16.2.0-open9)
+target=x86_64-linux-gnu
+tag=v16.2.0-open9-x86_64-glibc-rc1
+commit=80e8b7d49d9ca8a662124cd2ade6717721bf8ad4
+archive=gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-glibc2.35-x86_64-linux.tar.xz
+archive_sha256=fb8c4a429da559c1df53be1951beee3355ac38934a613f6bab8cb54bcfa938b5
+archive_url=https://github.com/DalsinAI/gfopengcc/releases/download/v16.2.0-open9-x86_64-glibc-rc1/gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-glibc2.35-x86_64-linux.tar.xz
+source=gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-glibc2.35-src.tar
+source_sha256=5e6b3cb8737ebb14fe323fbf73ccbaaf306ae50ccaf7a2bb4ae41c09fa7f2809
+top=gfopenamigagcc-16.2.0-open9-x86_64-linux-gnu-glibc2.35-x86_64-linux
