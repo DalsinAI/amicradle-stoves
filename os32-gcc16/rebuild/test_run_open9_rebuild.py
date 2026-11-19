@@ -90,7 +90,7 @@ class Run(unittest.TestCase):
         self.assertIn("3 repos scanned", r.stdout)
         self.assertIn("rebuild --stove", r.stdout)
         self.assertIn("--only alpha", r.stdout)
-        self.assertFalse((self.work / "rebuild.pid").exists())
+        self.assertFalse(self.work.exists())  # a dry run writes nothing
 
     def test_start_status_second_start_stop(self):
         r = self.run_it()

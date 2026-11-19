@@ -83,7 +83,6 @@ case $VER in *"$WANT"*) ;; *) stop_with "the stove says '$VER', not $WANT" ;; es
 [ -f "$HERE/pthread_users.py" ] || stop_with "no pthread_users.py beside this script"
 running && stop_with "a rebuild is running already, pid $(cat "$PID") (status / stop)"
 
-mkdir -p "$WORK"
 CMD=(python3 "$HERE/pthread_users.py" rebuild --stove "$STOVE" --list "$LIST" --work "$WORK" --report "$REPORT" ${ARGS[@]+"${ARGS[@]}"})
 echo "stove $STOVE: $VER"
 echo "list $LIST: $(($(wc -l < "$LIST") - 1)) repos scanned"
@@ -91,6 +90,7 @@ if [ $DRY = 1 ]; then
     printf 'would run:'; printf ' %q' "${CMD[@]}"; echo
     exit 0
 fi
+mkdir -p "$WORK" "$(dirname "$LOG")" "$(dirname "$PID")"
 echo "--- $(date '+%F %T %Z') start" >> "$LOG"
 nohup "${CMD[@]}" >> "$LOG" 2>&1 < /dev/null &
 echo $! > "$PID"
