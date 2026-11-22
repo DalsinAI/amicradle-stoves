@@ -10,6 +10,13 @@ Two reasons a shipped program needs building again on the open9 stove:
   whether it holds AmigaOS hunk programs, and whether its notes name open6 or open7 (a named old stove stays on the machines, so a later release can still have been built on one: the Atlas batch of 17 Nov says "native os32-gcc16-open6 build"); `rebuild --why both` (the default) takes both groups,
   `--why pthread` or `--why fmo` one of them.
 
+## Running it on daletop
+
+`run-open9-rebuild.sh` runs the whole list on daletop's open9 stove in the background, after checking the
+chain (host is daletop, python3, git and a signed-in gh, the stove says 16.2.0-open9, the list is there, no
+rebuild running). Run it again to carry on after a stop or a reboot; `status` counts the report, `stop` ends it,
+`--dry-run` checks and prints the command only. Tests: `python3 -m unittest test_run_open9_rebuild.py`.
+
 ## libpthread
 
 Programs link libpthread statically, so a fix in it (GFOpenAmigaGCC 16.2.0-open9: every `pthread_cond_signal`
