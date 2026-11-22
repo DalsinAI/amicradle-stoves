@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "name": "os32-gcc16",
+  "version": "16.2.0-open8",
+  "about": "The os32-gcc16 open8 stove: amicradle-ci stove assemble os32-gcc16/open8/recipe.json --out DIR. Every input comes from the stove store (or, for the release, GitHub) and is checked by its SHA-256; nothing comes from an older stove. The parts are open6's (os32-gcc16/open6/parts.json): only the release changes.",
+  "steps": [
+    {
+      "extract": "gfopenamigagcc@16.2.0-open8",
+      "sha256": "4855915429d8d623037af5aa911b2c3dd6b3ae98eb557eb22c4e76c4fbacf31b",
+      "into": "prefix",
+      "strip": "gfopenamigagcc-16.2.0-open8-x86_64-linux",
+      "gh": {
+        "repo": "DalsinAI/gfopengcc",
+        "tag": "v16.2.0-open8",
+        "asset": "gfopenamigagcc-16.2.0-open8-x86_64-linux.tar.xz"
+      }
+    },
+    {
+      "part": "os32-gcc16-open6-ndk@1",
+      "sha256": "ad5392a8be502e02dc1b8127687e84a2363885d1a9b9d6ed866f4da101d56126"
+    },
+    {
+      "part": "os32-gcc16-open6-port-deps@1",
+      "sha256": "957086c46ff1da51dc320ec88701022874d3f938aaae1f9de68154d13b20d0f3"
+    },
+    {
+      "part": "os32-gcc16-open6-kits@2",
+      "sha256": "11d540f56d895bca1adce4d859db88f693bb4d4559ef48e0ed99e75d3d92b558"
+    },
+    {
+      "part": "os32-gcc16-open6-opensdk@1",
+      "sha256": "f25f749076bdfe1960bdf399bf5fb62534f63b703d4b826ad1deae48fd8490c3",
+      "replace": true
+    },
+    {
+      "part": "os32-gcc16-open6-extras@1",
+      "sha256": "cdc5255d1ea3960692e1612d4988a0d946f666246233c8392c8fc80c563608be"
+    },
+    {
+      "run": [
+        "sh",
+        "{recipe}/../open6/add-vasm.sh",
+        "{stove}",
+        "{file:vasm@2.0f}"
+      ],
+      "files": {
+        "vasm@2.0f": "c84b2de1cbb87831795fe64a85c5d9a7002a766e3a7c30b0a2d7d5e99d878f49"
+      },
+      "sources": {
+        "vasm@2.0f": {
+          "url": "http://phoenix.owl.de/tags/vasm2_0f.tar.gz"
+        }
+      }
+    },
+    {
+      "run": [
+        "sh",
+        "{recipe}/../libnix/install-qsort.sh",
+        "{stove}"
+      ]
+    },
+    {
+      "run": [
+        "python3",
+        "{recipe}/stove-json.py",
+        "{stove}"
+      ]
+    }
+  ]
+}

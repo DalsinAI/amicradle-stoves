@@ -1,0 +1,47 @@
+[
+  {
+    "name": "OpenGPU-SDK",
+    "version": "0.7",
+    "folder": "OpenGPU-SDK-0.7",
+    "sha256": "3992be414e05fec449900303b4f222547e8c62bdf12720423c6047ffe96711cc",
+    "installed": "20261009T091330Z",
+    "files": 189,
+    "replaced": [],
+    "archive": "kits/OpenGPU-SDK-0.7.tar.gz"
+  },
+  {
+    "name": "GFOpenGPU-SDK",
+    "version": "0.8.1",
+    "folder": "GFOpenGPU-SDK-0.8.1",
+    "sha256": "df5d6ce6f433bd4cfad8452a6fa9aebc2a26bc096e228d021c056ba0e2e77017",
+    "installed": "20261109T141107Z",
+    "files": 235,
+    "replaced": [
+      "m68k-amigaos/share/GFOpenGPU-SDK/README",
+      "m68k-amigaos/share/GFOpenGPU-SDK/SHA256SUMS",
+      "m68k-amigaos/include/clib/minigl_protos.h",
+      "m68k-amigaos/include/libraries/minigl.h",
+      "m68k-amigaos/include/libraries/minigl_dispatch.h",
+      "m68k-amigaos/include/mgl/gl.h",
+      "m68k-amigaos/include/mgl/glut.h",
+      "m68k-amigaos/include/mgl/minigl_calls.h",
+      "m68k-amigaos/include/proto/minigl.h",
+      "m68k-amigaos/lib/libmgl.a",
+      "m68k-amigaos/lib/libminigl.a"
+    ],
+    "archive": "kits/GFOpenGPU-SDK-0.8.1.tar.gz"
+  },
+  {
+    "name": "GFOpenSDK",
+    "version": "0.2.91",
+    "folder": "GFOpenSDK-0.2.91",
+    "sha256": "3f7ff214ff058ef894d27825b783e709f5e652cedbfd0ac5b3d3dc2e25d8cc83",
+    "installed": "20261109T141546Z",
+    "files": 199,
+    "replaced": [
+      "m68k-amigaos/include/gfopengpu/build.h",
+      "m68k-amigaos/include/gfopengpu/stream.h"
+    ],
+    "archive": "kits/GFOpenSDK-0.2.91.tar.gz"
+  }
+]
