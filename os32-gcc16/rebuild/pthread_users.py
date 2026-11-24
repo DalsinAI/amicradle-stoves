@@ -220,16 +220,24 @@ def list_repos(owner: str) -> list[str]:
     return sorted(d["name"] for d in data)
 
 
+def newest_published(releases: list[dict]) -> dict | None:
+    """The newest release that was published, pre-releases included, from GitHub's list (newest first). A draft
+    is skipped: it has no git tag until it is published, so what it names can't be checked out (and nothing shipped
+    from it). The list puts drafts first, so a repo with a draft in hand looked as if its tag had gone."""
+    return next((r for r in releases or [] if not r.get("draft")), None)
+
+
 def newest_release(owner: str, repo: str):
-    """(tag, [asset names], published_at) of the newest release, pre-releases included; None when none."""
+    """(tag, [asset names], published_at, notes) of the newest published release, pre-releases included; None
+    when none."""
     try:
-        rel = gh_json(["api", f"repos/{owner}/{repo}/releases?per_page=1"])
+        rel = newest_published(gh_json(["api", f"repos/{owner}/{repo}/releases?per_page=30"]))
     except subprocess.CalledProcessError:
         return None
     if not rel:
         return None
-    return (rel[0]["tag_name"], [a["name"] for a in rel[0].get("assets", [])],
-            rel[0].get("published_at") or rel[0].get("created_at") or "", rel[0].get("body") or "")
+    return (rel["tag_name"], [a["name"] for a in rel.get("assets", [])],
+            rel.get("published_at") or rel.get("created_at") or "", rel.get("body") or "")
 
 
 def names_old_stove(notes: str) -> bool:
