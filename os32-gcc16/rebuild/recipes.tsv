@@ -18,3 +18,16 @@ gfopenputty	./build.sh && cp -R build/os3-020/OpenPuTTY "$OUT/"
 gfopensocket	sh guest/network/acnet/build.sh build/opensocket && sh tools/actcptools/build.sh build/opensocket && cp -R build/opensocket "$OUT/"
 gfopeninput	sh library/build.sh build-gcc16 && cp -R build-gcc16 "$OUT/"
 openamigaaudiotools	make && cp -R build/amiga "$OUT/"
+# The open9 rebuild's no-recipe repos (GF-109, 24 Nov 2026)
+# amicradle-guest at acfind-1.4: that tag is ACFind 1.4, built with GFOpenIndex by tools/openindex/build-amiga.sh (beside itself)
+amicradle-guest	sh tools/openindex/build-amiga.sh && mkdir -p "$OUT/GFOpenIndex" && cp tools/openindex/GFOpenIndex tools/openindex/ACFind "$OUT/GFOpenIndex/"
+# event.library and EVTest, as release.yml builds them (library/build.sh OUT_DIR)
+gfopenevent	sh library/build.sh "$OUT/GFOpenEvent"
+# gfopenprefs at GFOpenBlanker-1.6-rc1: the tag is the Blanker's; Blanker/build-amiga.sh is its stove_build entry point
+gfopenprefs	sh Blanker/build-amiga.sh
+# Tata and Tata-Prefs: build.sh needs a checkout of gfopengadtools (OGT) for the prefs window
+gfopentata	git clone -q --depth 1 https://github.com/DalsinAI/gfopengadtools .ogt && OGT="$PWD/.ogt" sh build.sh "$OUT/Tata"
+# GFOS Sans, Sans Bold and Mono (11, 13, 16 px) as FONTS: files, by tools/amigafont.py (no compiler: the fonts are data hunks)
+gfosfonts	for f in sans:GFOSSans sans-bold:GFOSSansBold mono:GFOSMono; do k=${f%%:*}; n=${f#*:}; mkdir -p "$OUT/Fonts/$n" && python3 tools/amigafont.py build src/gfos-$k-13.txt $n "$OUT/Fonts" src/gfos-$k-11.txt src/gfos-$k-16.txt || exit 1; done
+# The native probes of the Makefile with the stove as SDK_PREFIX; ffi_smoke_68040 is left out: it links libffi, which the stove has not got
+gfopengnustep	O="$OUT/GFOpenGNUstep"; make SDK_PREFIX="$STOVE/prefix" OUT="$O" "$O/gfos_exec_port_probe_68040" "$O/gfos_transport_selftest_68040" "$O/gfos_sync_selftest_68040"

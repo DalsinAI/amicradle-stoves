@@ -47,14 +47,23 @@ port with its own Amiga makefile: those makefiles default `STOVE` to the old `os
 the rebuild's stove on make's command line, then copies the makefile's `$(OUT)` folder (else `dist/`, or
 `FROM=DIR`) into `$OUT`.
 
+24 Nov (open9 rebuild, GF-109): recipes for amicradle-guest (its listed tag, acfind-1.4, is ACFind 1.4 and
+GFOpenIndex: tools/openindex/build-amiga.sh), gfopenevent, gfopenprefs (GFOpenBlanker-1.6-rc1: the Blanker),
+gfopentata (with a gfopengadtools checkout for Tata-Prefs), gfosfonts (tools/amigafont.py) and gfopengnustep (its
+native probes; ffi_smoke_68040 is left out, as the stove has no libffi).
+
 Still without a recipe, each for its own reason:
-- amigaaishireimu, amigasoniclasthope, amigaspeedy: no compile of their own; `scripts/package-standalone.sh -e`
-  repackages amigaopensurge's engine archive, so they follow amigaopensurge's rebuild.
+- amigaaishireimu, amigasoniclasthope, amigaspeedy: no compile of their own but the Installer's SHA256 tool;
+  `scripts/package-standalone.sh` repackages amigaopensurge's engine archive and refuses any engine but the one
+  `port/engine.env` pins (the open5 build), so they follow amigaopensurge's rebuild and a new engine.env.
+  amigaspeedy also needs the upstream game folder (`-g`).
+- amigafreeciv, amigagrafx2: they pin their own compiler, not the stove's. Freeciv's `build_sdk.sh` downloads
+  GFOpenAmigaGCC 16.2.0-open3 and builds against it whatever `STOVE` is; GrafX2's `build.py` stops unless the
+  compiler says 16.2.0-open3. A recipe would rebuild them on open3, so they need a change in the repo first.
+- amigaliquidwar5: `configure` needs `ALLEGRO_SDK` (a native Allegro 4 SDK with include/allegro.h and
+  lib/liballeg.a), and nothing at its tag says which one it was built with.
 - amigaas2r, amigaastromenace, amigaopenloco: the release tag is gone from the repo, so what shipped can't be
   checked out.
-- amigafreeciv, amigaliquidwar5, amigagrafx2: their port folders build in steps (platforms/amigaos3,
-  source/native-port) that need a hand.
-- gfopenbrowser, gfopengnustep, amicradle-guest, gfopenasm, gfopenevent, gfopenprefs, gfopentata, gfosfonts:
-  large or multi-part builds with their own release route; rebuild them there.
+- gfopenbrowser, gfopenasm: large or multi-part builds with their own release route; rebuild them there.
 
 `python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 22 tests.
