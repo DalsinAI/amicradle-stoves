@@ -55,12 +55,11 @@ every hash is checked first, only `port-deps/` is written, and a stove that
 already verifies is left as it is. `--check-only` just checks; a live stove
 under `~/AmiCradle/stoves` needs `LIVE_OK=1`, as for the specs.
 
-The game ports check their compiler stove with one shared gate,
-[gameports/verify_gameport_stove.py](gameports/): any published
-OpenAmigaGCC/GFOpenAmigaGCC 16.2.0-openN (open3 or later) whose stove records
-its archive SHA-256 and whose compiler says the same release, so a new release
-needs no change in the ports. Each port carries a copy in
-`scripts/verify_gameport_stove.py`; see [gameports/README.md](gameports/README.md).
+The game ports record which compiler stove built them with one shared script,
+[gameports/record_stove.py](gameports/): it names the compiler's release and
+archive and refuses no stove that has a compiler, so any release builds the
+ports. Each port carries a copy in `scripts/record_stove.py`; see
+[gameports/README.md](gameports/README.md).
 
 The aros68k-gcc16 recipe makes `-mcpu=68040` with soft float its default
 through its own specs file (see its README).
