@@ -33,3 +33,10 @@ gfosfonts	for f in sans:GFOSSans sans-bold:GFOSSansBold mono:GFOSMono; do k=${f%
 gfopengnustep	O="$OUT/GFOpenGNUstep"; make SDK_PREFIX="$STOVE/prefix" OUT="$O" "$O/gfos_exec_port_probe_68040" "$O/gfos_transport_selftest_68040" "$O/gfos_sync_selftest_68040"
 # Ports built against GFOpenGPU: its SDK's variables, from the stove (recipes/opengpu-sdk.sh)
 amigaserioussam	sh "$REBUILD/recipes/opengpu-sdk.sh" sh package/build-amiga.sh
+# The OpenSurge content ports: their Installer's SHA256 tool on the stove, then the standalone archive around the
+# engine archive amigaopensurge's rebuild left in WORK/amigaopensurge/out (port/engine.env pins its SHA-256, so they
+# build after amigaopensurge: run again if they come first). amigaspeedy ships its game: its upstream folder is in
+# OPEN9_UPSTREAM (default /srv/samsung/open9-rebuild/upstream), checked against the archive's pinned SHA-256 there.
+amigaaishireimu	. ./port/engine.env && sh scripts/build-sha256.sh "$STOVE" && sh scripts/package-standalone.sh -e "$PWD/../../amigaopensurge/out/$ENGINE_ASSET" "$OUT"
+amigasoniclasthope	. ./port/engine.env && sh scripts/build-sha256.sh "$STOVE" && sh scripts/package-standalone.sh -e "$PWD/../../amigaopensurge/out/$ENGINE_ASSET" "$OUT"
+amigaspeedy	. ./port/engine.env && . ./port/manifest.env && U="${OPEN9_UPSTREAM:-/srv/samsung/open9-rebuild/upstream}" && echo "$UPSTREAM_SHA256  $U/$UPSTREAM_ROOT.rar" | sha256sum -c --quiet - && sh scripts/build-sha256.sh "$STOVE" && sh scripts/package-standalone.sh -e "$PWD/../../amigaopensurge/out/$ENGINE_ASSET" -g "$U/$UPSTREAM_ROOT" "$OUT"
