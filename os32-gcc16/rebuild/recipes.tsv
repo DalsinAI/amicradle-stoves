@@ -7,10 +7,8 @@ amigagigalomania	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
 amigamaelstrom	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
 amigatowertoppler	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
 amigawarmux	sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
-amigaxrick	STOVE_ARG=prefix FROM=build/amigaos sh "$REBUILD/recipes/amiga-makefile.sh" amiga/Makefile.amigaos
-# Canvas Skies makefiles (AMIGA_STOVE)
-canvasskies	sh "$REBUILD/recipes/amiga-makefile.sh" ports/amigaos3/Makefile.canvas all AMIGA_STOVE="$STOVE"
-amigasdlsopwith	sh "$REBUILD/recipes/amiga-makefile.sh" ports/amigaos3/Makefile.canvas all AMIGA_STOVE="$STOVE"
+# Canvas Skies: its release drawer (make package, as its README builds it), from build-canvas-skies/package
+canvasskies	FROM=build-canvas-skies/package sh "$REBUILD/recipes/amiga-makefile.sh" ports/amigaos3/Makefile.canvas package AMIGA_STOVE="$STOVE"
 # Their own Cradle entry points or build scripts
 amigaalphac	sh ports/alpha-centauri/build-amiga.sh
 amiganeverball	sh "$REBUILD/recipes/neverball.sh"
