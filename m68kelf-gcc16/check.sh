@@ -39,9 +39,9 @@ F="-m68040 -msoft-float -Os -ffreestanding -fno-builtin"
 "${X}readelf" -S "$C/q.elf" | grep -q '\.rela' || fail "ld -q kept no relocations"
 "${X}ld" -r "$C/s.o" "$C/f.o" -o "$C/r.o" && "${X}readelf" -h "$C/r.o" | grep -q 'REL (Relocatable' || fail "ld -r failed"
 "${X}gcc" $F -fPIE -c "$C/s.c" -o "$C/sp.o"
-"${X}ld" -pie -e _start --no-dynamic-linker -z norelro "$C/sp.o" "$C/fp.o" -o "$C/pie.elf" \
+"${X}gcc" $F -fPIE -pie -nostdlib -Wl,-e,_start,--no-dynamic-linker,-z,norelro "$C/sp.o" "$C/fp.o" -lgcc -o "$C/pie.elf" \
   && "${X}readelf" -h "$C/pie.elf" | grep -q 'DYN' || fail "-pie failed"
-"${X}gcc" $F -fPIC -shared -nostdlib -Wl,--hash-style=both "$C/f.c" -o "$C/libf.so" \
+"${X}gcc" $F -fPIC -shared -nostdlib -Wl,--hash-style=both "$C/f.c" -lgcc -o "$C/libf.so" \
   && "${X}readelf" -d "$C/libf.so" | grep -q 'INIT_ARRAY' || fail "-shared (with a constructor) failed"
 "${X}objcopy" -O binary "$C/q.elf" "$C/q.bin" && [ -s "$C/q.bin" ] || fail "objcopy -O binary failed"
 "${X}gcc" $F -print-libgcc-file-name | grep -q 'libgcc.a' || fail "no libgcc"
