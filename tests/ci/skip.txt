@@ -1,0 +1,3 @@
+# Tests pull request CI does not run, one per line: the path, then why. Keep it short; every line is a gap.
+os32-gcc16/tests/upgrade/test_upgrade.sh needs ARCHIVE, a real release toolchain download (run by hand with upgrade.sh)
+os32-gcc16/tests/qemu-libnix/test_qsort.sh needs a built os32 stove's libnix (STOVE) and qemu-m68k
