@@ -1,3 +1,5 @@
 # Tests pull request CI does not run, one per line: the path, then why. Keep it short; every line is a gap.
 os32-gcc16/tests/upgrade/test_upgrade.sh needs ARCHIVE, a real release toolchain download (run by hand with upgrade.sh)
 os32-gcc16/tests/qemu-libnix/test_qsort.sh needs a built os32 stove's libnix (STOVE) and qemu-m68k
+os32-gcc16/tests/qemu-check/run_bebbo.sh a helper (BB CPUFLAG SRC OUT) run by the torture check on a built GCC 16 tree, not a test of its own
+os32-gcc16/tests/qemu-check/run_torture.sh needs a built GCC 16 tree and its qemu-m68k ($HOME/gcc16)
