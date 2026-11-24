@@ -62,16 +62,12 @@ gfopentata (with a gfopengadtools checkout for Tata-Prefs), gfosfonts (tools/ami
 native probes; ffi_smoke_68040 is left out, as the stove has no libffi).
 
 Still without a recipe, each for its own reason:
-- amigaaishireimu, amigasoniclasthope, amigaspeedy: no compile of their own but the Installer's SHA256 tool;
-  `scripts/package-standalone.sh` repackages amigaopensurge's engine archive and refuses any engine but the one
-  `port/engine.env` pins (the open5 build), so they follow amigaopensurge's rebuild and a new engine.env.
-  amigaspeedy also needs the upstream game folder (`-g`).
-- amigafreeciv, amigagrafx2: they pin their own compiler, not the stove's. Freeciv's `build_sdk.sh` downloads
-  GFOpenAmigaGCC 16.2.0-open3 and builds against it whatever `STOVE` is; GrafX2's `build.py` stops unless the
-  compiler says 16.2.0-open3. A recipe would rebuild them on open3, so they need a change in the repo first.
-- amigaliquidwar5: `configure` needs `ALLEGRO_SDK` (a native Allegro 4 SDK with include/allegro.h and
-  lib/liballeg.a), and nothing at its tag says which one it was built with.
-- amigaas2r: no compile of its own (a content port for amigaopensurge's engine), like the three above.
+- 24 Nov, later: amigafreeciv (v3.3.90-amigaos3-rc2) and amigagrafx2 (v2.9-openup-rc2) build on `STOVE` instead of
+  their pinned open3 compiler; amigafreeciv has a recipe here, amigagrafx2's tag has build-amiga.sh. The OpenSurge
+  content ports (standalone-rc3) pin amigaopensurge v0.6.1.3-amigaos3-rc5, built on open9, and have recipes here.
+- amigaliquidwar5: `configure` needs `ALLEGRO_SDK` (gfopenallegro's allegro4 gives include/allegro.h and
+  liballeg.a) and, on the build host, autoconf and Allegro 4's `dat` (`ALLEGRO_DAT`), which bigguy has not got.
+- amigaas2r: no compile of its own (a content port for amigaopensurge's engine), like the three OpenSurge content ports.
 - amigaastromenace: its build refuses any stove but a verified 16.2.0-open8 one (scripts/verify_open8_stove.py),
   so it needs that guard moved on to open9 in the repo first. amigaopenloco: Team 1's staged stove and SDL3 SDK
   (OPENLOCO_STOVE, OPENLOCO_SDL3_SDK) and a build that runs over several calls.

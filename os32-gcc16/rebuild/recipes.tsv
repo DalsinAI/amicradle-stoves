@@ -39,3 +39,6 @@ amigaserioussam	sh "$REBUILD/recipes/opengpu-sdk.sh" sh package/build-amiga.sh
 amigaaishireimu	. ./port/engine.env && sh scripts/build-sha256.sh "$STOVE" && sh scripts/package-standalone.sh -e "${OPEN9_UPSTREAM:-/srv/samsung/open9-rebuild/upstream}/$ENGINE_ASSET" "$OUT"
 amigasoniclasthope	. ./port/engine.env && sh scripts/build-sha256.sh "$STOVE" && sh scripts/package-standalone.sh -e "${OPEN9_UPSTREAM:-/srv/samsung/open9-rebuild/upstream}/$ENGINE_ASSET" "$OUT"
 amigaspeedy	. ./port/engine.env && . ./port/manifest.env && U="${OPEN9_UPSTREAM:-/srv/samsung/open9-rebuild/upstream}" && echo "$UPSTREAM_SHA256  $U/$UPSTREAM_ROOT.rar" | sha256sum -c --quiet - && sh scripts/build-sha256.sh "$STOVE" && sh scripts/package-standalone.sh -e "${OPEN9_UPSTREAM:-/srv/samsung/open9-rebuild/upstream}/$ENGINE_ASSET" -g "$U/$UPSTREAM_ROOT" "$OUT"
+# Freeciv: its release package, platforms/amigaos3/package/build-amiga.sh (from v3.3.90-amigaos3-rc2 its SDK is built
+# around STOVE, the stove copied, never written)
+amigafreeciv	bash platforms/amigaos3/package/build-amiga.sh
