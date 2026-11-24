@@ -24,7 +24,7 @@ rebuild: for every repo of the list that --why picks (default both: carries libp
 released before open8), or --only, clones or updates it under WORK and runs its build recipe in the clone with
 STOVE, OS32_GCC16, OUT and REBUILD (this folder, for recipes/) set (the output must land in OUT): recipes.tsv's "repo <TAB> command", else
 package/build-amiga.sh, else build-amiga.sh. A repo with none is "no-recipe", never guessed. A build that leaves
-no AmigaOS program in OUT is "no-output". Nothing is published: each output stays in WORK/<repo>/out for the
+no AmigaOS program in OUT, loose or in an archive it packed there, is "no-output". Nothing is published: each output stays in WORK/<repo>/out for the
 repo's own release route. Report lines: repo, result (built / failed / no-recipe / no-output), seconds, out,
 log, head, stove, and whether OUT carries libpthread.
 
@@ -86,6 +86,29 @@ def amiga_programs(folder: Path) -> list[str]:
             except OSError:
                 pass
     return hits
+
+
+def built_programs(out: Path) -> tuple[list[str], list[str]]:
+    """What a build left in out: its AmigaOS programs, and those of them that carry libpthread. A package build
+    leaves its programs packed (NAME-VERSION-68040.lha, a drawer .tar for a lab) with the drawer it packed
+    elsewhere, so every archive under out (outside .git folders) is unpacked and its members counted too, as
+    "ARCHIVE:member". An archive that can't be unpacked counts for nothing."""
+    progs, pt = amiga_programs(out), carries_libpthread(out)
+    arcs = [p for p in sorted(out.rglob("*")) if p.is_file() and not p.is_symlink() and is_archive(p.name)
+            and ".git" not in p.relative_to(out).parts]
+    if arcs:
+        with tempfile.TemporaryDirectory(dir=out.parent) as tmp:
+            for i, arc in enumerate(arcs):
+                into, name = Path(tmp) / str(i), str(arc.relative_to(out))
+                try:
+                    unpack(arc, into)
+                except Exception as e:  # noqa: BLE001 - a broken archive is not output, never a crash
+                    print(f"  {name}: not unpacked ({e})", flush=True)
+                    continue
+                progs += [f"{name}:{h}" for h in amiga_programs(into)]
+                pt += [f"{name}:{h}" for h in carries_libpthread(into)]
+                shutil.rmtree(into, ignore_errors=True)
+    return progs, pt
 
 
 def is_archive(name: str) -> bool:
@@ -318,14 +341,15 @@ def rebuild(a) -> int:
                 lf.write(f"$ {cmd}   (STOVE={stove} OUT={out})\n"); lf.flush()
                 rc = subprocess.run(cmd, cwd=clone, env=env, shell=True, stdout=lf, stderr=subprocess.STDOUT,
                                     stdin=subprocess.DEVNULL).returncode
+            progs, pt_files = built_programs(out) if rc == 0 else ([], [])
             if rc != 0:
                 result = "failed"
-            elif not amiga_programs(out):
+            elif not progs:
                 result = "no-output"
             else:
                 result = "built"
         secs = str(int(time.time() - t0))
-        pt = "yes" if result == "built" and carries_libpthread(out) else "no"
+        pt = "yes" if result == "built" and pt_files else "no"
         report = [r for r in report if r[0] != repo] + [[repo, result, secs, str(out), str(log), head, stove_id, pt]]
         write_tsv(report_path, "repo\tresult\tseconds\tout\tlog\thead\tstove\tlibpthread", report)
         failed += result != "built"
