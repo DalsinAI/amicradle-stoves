@@ -65,8 +65,9 @@ Still without a recipe, each for its own reason:
 - 24 Nov, later: amigafreeciv (v3.3.90-amigaos3-rc2) and amigagrafx2 (v2.9-openup-rc2) build on `STOVE` instead of
   their pinned open3 compiler; amigafreeciv has a recipe here, amigagrafx2's tag has build-amiga.sh. The OpenSurge
   content ports (standalone-rc3) pin amigaopensurge v0.6.1.3-amigaos3-rc5, built on open9, and have recipes here.
-- amigaliquidwar5: `configure` needs `ALLEGRO_SDK` (gfopenallegro's allegro4 gives include/allegro.h and
-  liballeg.a) and, on the build host, autoconf and Allegro 4's `dat` (`ALLEGRO_DAT`), which bigguy has not got.
+- amigaliquidwar5 (v5.6.7-open9-rc1-test): its build-amiga.sh builds gfopenallegro's allegro4 on `STOVE` as the
+  Allegro 4 SDK and the game without autotools; liquidwar.dat, which isn't compiled, comes from the open8 release
+  made from the same data/ (no host Allegro 4 `dat` here), checked by SHA-256.
 - amigaas2r: no compile of its own (a content port for amigaopensurge's engine), like the three OpenSurge content ports.
 - amigaastromenace: its build refuses any stove but a verified 16.2.0-open8 one (scripts/verify_open8_stove.py),
   so it needs that guard moved on to open9 in the repo first. amigaopenloco: Team 1's staged stove and SDL3 SDK
