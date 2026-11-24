@@ -72,6 +72,29 @@ class Archives(Tmp):
         pu.unpack(a, self.t / "x")
         self.assertEqual(pu.carries_libpthread(self.t / "x"), ["Prog/prog"])
 
+    def test_built_programs_looks_in_packed_archives(self):
+        out = self.t / "out"
+        out.mkdir()
+        (out / "build-output.txt").write_text("log")
+        self.assertEqual(pu.built_programs(out), ([], []))
+        with zipfile.ZipFile(out / "Game-1.0-68040.zip", "w", zipfile.ZIP_DEFLATED) as f:
+            f.writestr("Game/Game", PTHREAD)
+            f.writestr("Game/Tool", PROGRAM)
+            f.writestr("Game.info", b"icon")
+        a = out / "Game.tar"
+        with tarfile.open(a, "w") as f:
+            info = tarfile.TarInfo("Game/Game")
+            info.size = len(PROGRAM)
+            f.addfile(info, io.BytesIO(PROGRAM))
+        (out / "deps" / "lib" / ".git").mkdir(parents=True)
+        with zipfile.ZipFile(out / "deps" / "lib" / ".git" / "x.zip", "w") as f:
+            f.writestr("Prog", PROGRAM)                       # inside a .git folder: not the build's output
+        (out / "broken.lha").write_bytes(b"not an archive")   # can't be unpacked: counts for nothing
+        progs, pt = pu.built_programs(out)
+        self.assertEqual(progs, ["Game-1.0-68040.zip:Game/Game", "Game-1.0-68040.zip:Game/Tool", "Game.tar:Game/Game"])
+        self.assertEqual(pt, ["Game-1.0-68040.zip:Game/Game"])
+        self.assertEqual(sorted(p.name for p in self.t.iterdir()), ["out"])   # nothing left unpacked
+
     def test_not_an_archive(self):
         with self.assertRaises(ValueError):
             pu.unpack(self.t / "x.readme", self.t / "x")
@@ -206,7 +229,8 @@ class RebuildRun(Tmp):
         (stove / "STOVE.json").write_text(json.dumps({"release": "GFOpenAmigaGCC 16.2.0-open9"}))
         srcs = {}
         for name, script in {"good": 'printf "\\000\\000\\003\\363pthread thread #%%ld" > "$OUT/Prog"; test -n "$STOVE"',
-                             "bad": "exit 3", "nolib": 'printf "\\000\\000\\003\\363plain" > "$OUT/Prog"', "empty": "true", "none": None}.items():
+                             "bad": "exit 3", "nolib": 'printf "\\000\\000\\003\\363plain" > "$OUT/Prog"', "empty": "true", "none": None,
+                             "packed": 'mkdir -p d/G && printf "\\000\\000\\003\\363pthread thread #%%ld" > d/G/G && tar -cf "$OUT/G.tar" -C d G'}.items():
             r = self.t / "remote" / name
             r.mkdir(parents=True)
             if script is not None:
@@ -225,14 +249,14 @@ class RebuildRun(Tmp):
         real_run = subprocess.run
         report = self.t / "report.tsv"
         args = ["rebuild", "--stove", str(stove), "--work", str(self.t / "work"), "--report", str(report),
-                "--recipes", str(self.t / "none.tsv"), "--only", "good", "bad", "nolib", "empty", "none"]
+                "--recipes", str(self.t / "none.tsv"), "--only", "good", "bad", "nolib", "empty", "none", "packed"]
         with mock.patch.object(pu.subprocess, "run", side_effect=fake_run):
             self.assertEqual(pu.main(args), 1)
             rows = pu.read_tsv(report)
             got = {r[0]: r[1] for r in rows}
             self.assertEqual(got, {"good": "built", "bad": "failed", "nolib": "built", "empty": "no-output",
-                                   "none": "no-recipe"})
-            self.assertEqual({r[0]: r[7] for r in rows if r[1] == "built"}, {"good": "yes", "nolib": "no"})
+                                   "none": "no-recipe", "packed": "built"})
+            self.assertEqual({r[0]: r[7] for r in rows if r[1] == "built"}, {"good": "yes", "nolib": "no", "packed": "yes"})
             # a second run skips what is built at the same head on the same stove
             before = (self.t / "work" / "good" / "build.log").stat().st_mtime_ns
             pu.main(args)

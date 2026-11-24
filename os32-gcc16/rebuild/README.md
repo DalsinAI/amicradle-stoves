@@ -34,7 +34,10 @@ python3 pthread_users.py rebuild --stove ~/AmiCradle/kitchen/stoves/os32-gcc16 \
   merged; `--head` takes the default branch instead). It clones (or updates) each repo under `~/AmiCradle-dev/scratch/pthread-rebuild/<repo>/src` and
   runs its recipe there with `STOVE`, `OS32_GCC16`, `OUT` and `REBUILD` (this folder) set: `recipes.tsv`'s line for the repo, else
   `package/build-amiga.sh`, else `build-amiga.sh`. A repo with neither is `no-recipe` (add a line to
-  `recipes.tsv`), never guessed. A build that leaves no AmigaOS program in `OUT` is `no-output`. The report
+  `recipes.tsv`), never guessed. A build that leaves no AmigaOS program in `OUT` is `no-output`: loose files count, and so do the
+  members of every archive the build packed there (most `package/build-amiga.sh` leave only
+  `NAME-VERSION-68040.lha`, and keep the drawer they packed in their own `build/` or `dist/`); libpthread is looked
+  for in both. The report
   (`repo, result, seconds, out, log, head, stove, libpthread`) is rewritten after every repo; a repo already `built` at the
   same head on the same stove is skipped, so a stopped run carries on where it was (`--again` rebuilds).
 - Nothing is published. Each rebuilt program goes out through its own repo's release route.
@@ -57,4 +60,4 @@ Still without a recipe, each for its own reason:
 - gfopenbrowser, gfopengnustep, amicradle-guest, gfopenasm, gfopenevent, gfopenprefs, gfopentata, gfosfonts:
   large or multi-part builds with their own release route; rebuild them there.
 
-`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 22 tests.
+`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 23 tests.
