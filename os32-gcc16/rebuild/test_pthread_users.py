@@ -263,5 +263,16 @@ class RebuildRun(Tmp):
             self.assertEqual((self.t / "work" / "good" / "build.log").stat().st_mtime_ns, before)
 
 
+
+class NewestPublished(unittest.TestCase):
+    def test_a_draft_is_skipped(self):
+        rels = [{"tag_name": "v2-draft", "draft": True}, {"tag_name": "v1", "draft": False, "prerelease": True}]
+        self.assertEqual(pu.newest_published(rels)["tag_name"], "v1")
+
+    def test_only_drafts_or_none(self):
+        self.assertIsNone(pu.newest_published([{"tag_name": "d", "draft": True}]))
+        self.assertIsNone(pu.newest_published([]))
+        self.assertIsNone(pu.newest_published(None))
+
 if __name__ == "__main__":
     unittest.main()

@@ -48,7 +48,13 @@ python3 pthread_users.py rebuild --stove ~/AmiCradle/kitchen/stoves/os32-gcc16 \
 `build-amiga.sh` (18 Nov: 16 of the 33). `recipes/amiga-makefile.sh MAKEFILE [TARGET] [NAME=VALUE ...]` builds a
 port with its own Amiga makefile: those makefiles default `STOVE` to the old `os32-gcc16-open6` path, so it puts
 the rebuild's stove on make's command line, then copies the makefile's `$(OUT)` folder (else `dist/`, or
-`FROM=DIR`) into `$OUT`.
+`FROM=DIR`) into `$OUT`. `recipes/opengpu-sdk.sh COMMAND` runs a GFOpenGPU port's build with `OPENUP_SDK`,
+`OPENGL_KIT` and `OPENGPU_SDK` made from the stove's own GFOpenGPU SDK (amigaserioussam, amiganeverball).
+`recipes/neverball.sh` gathers what amiganeverball's README gathers by hand: Neverball at `build.sh`'s pin, cloned
+beside the clone, and the official `data-1.6.0.pk3` (`NEVERBALL_DATA_PK3`, else `$HOME/.cache/neverball/`).
+`recipes/beside.sh URL DIR [FILE] -- COMMAND` clones another repository beside the clone as it was when the
+clone's HEAD was committed (gfopenputty's `../openamigatls`, now DalsinAI/gfopentls, from before its headers were
+renamed gfopencrypto).
 
 24 Nov (open9 rebuild, GF-109): recipes for amicradle-guest (its listed tag, acfind-1.4, is ACFind 1.4 and
 GFOpenIndex: tools/openindex/build-amiga.sh), gfopenevent, gfopenprefs (GFOpenBlanker-1.6-rc1: the Blanker),
@@ -65,8 +71,11 @@ Still without a recipe, each for its own reason:
   compiler says 16.2.0-open3. A recipe would rebuild them on open3, so they need a change in the repo first.
 - amigaliquidwar5: `configure` needs `ALLEGRO_SDK` (a native Allegro 4 SDK with include/allegro.h and
   lib/liballeg.a), and nothing at its tag says which one it was built with.
-- amigaas2r, amigaastromenace, amigaopenloco: the release tag is gone from the repo, so what shipped can't be
-  checked out.
+- amigaas2r: no compile of its own (a content port for amigaopensurge's engine), like the three above.
+- amigaastromenace: its build refuses any stove but a verified 16.2.0-open8 one (scripts/verify_open8_stove.py),
+  so it needs that guard moved on to open9 in the repo first. amigaopenloco: Team 1's staged stove and SDL3 SDK
+  (OPENLOCO_STOVE, OPENLOCO_SDL3_SDK) and a build that runs over several calls.
+  (Their tags had looked gone: `scan` took a draft release, which has no tag. It skips drafts now.)
 - gfopenbrowser, gfopenasm: large or multi-part builds with their own release route; rebuild them there.
 
-`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 23 tests.
+`python3 -m unittest test_pthread_users.py` (no network, no gh, no stove): 25 tests.
