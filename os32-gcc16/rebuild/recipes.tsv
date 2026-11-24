@@ -42,3 +42,7 @@ amigaspeedy	. ./port/engine.env && . ./port/manifest.env && U="${OPEN9_UPSTREAM:
 # Freeciv: its release package, platforms/amigaos3/package/build-amiga.sh (from v3.3.90-amigaos3-rc2 its SDK is built
 # around STOVE, the stove copied, never written)
 amigafreeciv	bash platforms/amigaos3/package/build-amiga.sh
+# GFOpenELF (elf.library, its tools and its ELF examples): 68k ELF, from the m68kelf-gcc16-open9 stove beside the
+# rebuild's (m68kelf-gcc16/build.sh; os32-gcc16's binutils have no ELF). CC, LD and NM work from v2.0 on, M68K_ELF
+# after it.
+gfopenelflibrary	sh "$REBUILD/recipes/m68kelf.sh" sh build-amiga.sh

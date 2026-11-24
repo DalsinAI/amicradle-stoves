@@ -1,0 +1,8 @@
+# m68kelf-gcc16-open9 (m68kelf-gcc16/build.sh): GFOpenAmigaGCC 16.2.0-open9 for 68k ELF, from gfopengcc's Linux
+# compiler recipe at this commit (scripts/linux.lock's GCC 16.2.0 and binutils 2.47 pins and their SHA-256,
+# patches/linux/series). target m68k-linux-gnu: the System V ABI and elf32-m68k; no C library is built.
+name=m68kelf-gcc16-open9
+target=m68k-linux-gnu
+identity=GFOpenAmigaGCC 16.2.0-open9
+gfopengcc_url=https://github.com/DalsinAI/gfopengcc.git
+gfopengcc_commit=2ec3f0a346e05cac9f8ee127042b1d6f72964a80
