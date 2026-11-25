@@ -10,7 +10,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parents[1] / "gameports"
 SCRIPT = HERE / "record_stove.py"
 SPEC = importlib.util.spec_from_file_location("record_stove", SCRIPT)
 assert SPEC and SPEC.loader
